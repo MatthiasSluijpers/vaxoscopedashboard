@@ -51,7 +51,7 @@ figVacNL = px.line(  vacNL,
                 template = "seaborn")
 
 figVacNL.update_traces(connectgaps=True)
-figVacNL.update_traces(line_color='#ffc107')
+figVacNL.update_traces(line_color='#b67a0c')
 figVacNL.add_hline(y=90, line_width=2, line_dash="dash", opacity=0.2, annotation_text="<i>theoretical herd immunity</i>", annotation_position="top right")
 
 # Figuur attitudes NL
@@ -83,7 +83,7 @@ figAgeNL = px.bar(  ageNL,
                     range_y = [0,100],
                     template = "seaborn")
 
-figAgeNL.update_traces(marker_color='#ffc107')
+figAgeNL.update_traces(marker_color='#b67a0c')
 
 
 # Figuur gemeentes NL
@@ -92,7 +92,7 @@ figMunicNL = px.choropleth( municNLGeoData,
                             locations=municNLGeoData.index,
                             color="vaccinated",
                             title="<b>Vaccination Level Per Dutch Municipality:</b>",
-                            labels = {"vaccinated":"Vaccination Level (%)"},
+                            labels = {"vaccinated":"Vaccination Level (%)", "statnaam":"Municipality"},
                             color_continuous_scale = [[0,"red"], [0.6,"orange"], [1,"steelblue"]],
                             template = "seaborn")
 figMunicNL.update_geos(fitbounds="locations", visible=False)

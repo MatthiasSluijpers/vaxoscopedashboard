@@ -26,6 +26,9 @@ attUK = attitudes.copy()
 attUK = attUK[attUK["Entity"] == "United Kingdom"]
 attUK.columns = ["country", "code", "date", "unwilling", "uncertain", "willing", "vaccinated"]
 
+# Data inkomensgroepen UK
+incomeUK = pd.read_csv("data/incomeUK.csv")
+
 
 
 ## FIGUREN MAKEN ------------------------------------------------------------------------------------------------
@@ -63,6 +66,18 @@ figAttUK = px.line(  attUK,
 figAttUK.update_traces(connectgaps=True)
 custom_legend_name(figAttUK, ['unwilling to get vaccinated','uncertain about vaccination', "willing but not yet vaccinated"])
 
+# Figuur inkomensgroepen UK
+figIncomeUK = px.bar(  incomeUK,
+                    x='deprivation',
+                    y='vaccinated',
+                    title='<b>Vaccination level per deprivation class the United Kingdom:</b>',
+                    labels= {"deprivation" : "Index of Multiple Deprivation (IMD) Groups",
+                             "vaccinated" : "Vaccination Level (%) one-or-two doses"},
+                    range_y = [75,100],
+                    template = "seaborn")
+
+figIncomeUK.update_traces(marker_color='crimson')
+
 
 
 
@@ -81,7 +96,7 @@ layout = dbc.Container([
 
     dbc.Row([
         dbc.Col([
-            #dcc.Graph(id='ages_UK', figure={})
+            dcc.Graph(id='income_UK', figure=figIncomeUK)
         ], width = {"size":5, "offset":1}),
         dbc.Col([
             #dcc.Graph(id='region_UK', figure={})

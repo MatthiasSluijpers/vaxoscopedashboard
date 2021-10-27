@@ -14,17 +14,23 @@ import dash_bootstrap_components as dbc
 
 ## DATA OPHALEN ------------------------------------------------------------------------------------------------
 
-# Data vaccinatiegraad UK
+# Data vaccinatiegraad USA
 vaccinations = pd.read_csv("data/vaccinations.csv")
 vacUSA = vaccinations.copy()
 vacUSA = vacUSA[vacUSA["location"] == "United States"][["location", "date","people_fully_vaccinated_per_hundred"]]
 vacUSA.dropna(inplace = True)
 
-# Data attitudes UK
+# Data attitudes USA
 attitudes = pd.read_csv("data/attitudes.csv")
 attUSA = attitudes.copy()
 attUSA = attUSA[attUSA["Entity"] == "United States"]
 attUSA.columns = ["country", "code", "date", "unwilling", "uncertain", "willing", "vaccinated"]
+
+# Data leeftijdsgroepen USA
+ageUSA = pd.read_csv("data/agesUSA.csv")
+
+# Data inkomensgroepen USA
+incomeUSA = pd.read_csv("data/incomeUSA.csv")
 
 
 
@@ -63,6 +69,30 @@ figAttUSA = px.line(  attUSA,
 figAttUSA.update_traces(connectgaps=True)
 custom_legend_name(figAttUSA, ['unwilling to get vaccinated','uncertain about vaccination', "willing but not yet vaccinated"])
 
+# Figuur leeftijdsgroepen USA
+figAgeUSA = px.bar(  ageUSA,
+                    x='age_group',
+                    y='vaccinated',
+                    title='<b>Vaccination level per age group the United States:</b>',
+                    labels= {"age_group" : "Age Group",
+                             "vaccinated" : "Vaccination Level (%)"},
+                    range_y = [40,100],
+                    template = "seaborn")
+
+figAgeUSA.update_traces(marker_color='steelblue')
+
+# Figuur inkomensgroepen USA
+figIncomeUSA = px.bar(  incomeUSA,
+                    x='income',
+                    y='vaccinated',
+                    title='<b>Vaccination level per income group the United States:</b>',
+                    labels= {"income" : "Income Group",
+                             "vaccinated" : "Vaccination Level (%)"},
+                    range_y = [40,100],
+                    template = "seaborn")
+
+figIncomeUSA.update_traces(marker_color='steelblue')
+
 
 
 
@@ -81,10 +111,10 @@ layout = dbc.Container([
 
     dbc.Row([
         dbc.Col([
-            #dcc.Graph(id='ages_UK', figure={})
+            dcc.Graph(id='ages_USA', figure=figAgeUSA)
         ], width = {"size":5, "offset":1}),
         dbc.Col([
-            #dcc.Graph(id='region_UK', figure={})
+            dcc.Graph(id='income_USA', figure=figIncomeUSA)
         ], width = {"size":5})
     ]),
 

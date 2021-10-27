@@ -32,8 +32,8 @@ function accentHome() {
 
 function accentNL() {
   nav = document.querySelector(".nav");
-  nav.style.background = "#b68c0c";
-  nav.style.borderColor = "#7f7145";
+  nav.style.background = "#b67a0c";
+  nav.style.borderColor = "#916109";
 }
 
 function accentUK() {
