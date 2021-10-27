@@ -30,7 +30,7 @@ attUK.columns = ["country", "code", "date", "unwilling", "uncertain", "willing",
 
 ## FIGUREN MAKEN ------------------------------------------------------------------------------------------------
 
-# Figuur vaccinatiegraad NL
+# Figuur vaccinatiegraad UK
 figVacUK = px.line(  vacUK,
                 x="date",
                 y="people_fully_vaccinated_per_hundred",
@@ -41,9 +41,10 @@ figVacUK = px.line(  vacUK,
                 template = "seaborn")
 
 figVacUK.update_traces(connectgaps=True)
+figVacUK.update_traces(line_color="crimson")
 figVacUK.add_hline(y=90, line_width=2, line_dash="dash", opacity=0.2, annotation_text="<i>theoretical herd immunity</i>", annotation_position="top right")
 
-# Figuur attitudes NL
+# Figuur attitudes UK
 def custom_legend_name(figure, new_names):
     for i, new_name in enumerate(new_names):
         figure.data[i].name = new_name
@@ -56,7 +57,8 @@ figAttUK = px.line(  attUK,
                 labels = {"date" : "Date",
                           "value" : "Share of Population (%)"},
                 range_y = [0,100],
-                template = "seaborn")
+                template = "seaborn",
+                color_discrete_map = {"unwilling":"black", "uncertain":"purple", "willing":"seagreen"})
 
 figAttUK.update_traces(connectgaps=True)
 custom_legend_name(figAttUK, ['unwilling to get vaccinated','uncertain about vaccination', "willing but not yet vaccinated"])

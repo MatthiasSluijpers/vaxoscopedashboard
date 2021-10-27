@@ -51,6 +51,7 @@ figVacNL = px.line(  vacNL,
                 template = "seaborn")
 
 figVacNL.update_traces(connectgaps=True)
+figVacNL.update_traces(line_color='#ffc107')
 figVacNL.add_hline(y=90, line_width=2, line_dash="dash", opacity=0.2, annotation_text="<i>theoretical herd immunity</i>", annotation_position="top right")
 
 # Figuur attitudes NL
@@ -66,7 +67,8 @@ figAttNL = px.line(  attNL,
                 labels = {"date" : "Date",
                           "value" : "Share of Population (%)"},
                 range_y = [0,100],
-                template = "seaborn")
+                template = "seaborn",
+                color_discrete_map = {"unwilling":"black", "uncertain":"purple", "willing":"seagreen"})
 
 figAttNL.update_traces(connectgaps=True)
 custom_legend_name(figAttNL, ['unwilling to get vaccinated','uncertain about vaccination', "willing but not yet vaccinated"])
@@ -80,6 +82,8 @@ figAgeNL = px.bar(  ageNL,
                              "vaccinated" : "Vaccination Level (%)"},
                     range_y = [0,100],
                     template = "seaborn")
+
+figAgeNL.update_traces(marker_color='#ffc107')
 
 
 # Figuur gemeentes NL

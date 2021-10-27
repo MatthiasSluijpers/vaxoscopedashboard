@@ -2,8 +2,8 @@
   margin-bottom: 60px;
   padding-top: 15px;
   padding-bottom: 15px;
-  background: #456888;
-  border: 2px #38465c solid;
+  background: #424242; /* #456888 */
+  border: 2px #303030 solid; /* #38465c */
   border-bottom-left-radius: 10px;
   border-bottom-right-radius: 10px;
 
@@ -27,5 +27,5 @@
 }
 
 .nav-pills .nav-link.active, .nav-pills .show>.nav-link{
-  background-color: #38465c;
+  background-color: #00000047;
 }
