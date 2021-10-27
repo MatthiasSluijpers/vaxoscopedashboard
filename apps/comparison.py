@@ -31,65 +31,33 @@ incomeUK = pd.read_csv("data/incomeUK.csv")
 
 
 
-## FIGUREN MAKEN ------------------------------------------------------------------------------------------------
-
-# Figuur vaccinatiegraad UK
-figVacUK = px.line(  vacComp,
-                x="date",
-                y="people_fully_vaccinated_per_hundred",
-                color="location",
-                title='<b>Vaccination level per Country:</b>',
-                labels = {"people_fully_vaccinated_per_hundred" : "Vaccination Level (%)",
-                          "date" : "Date"},
-                range_y = [0,100],
-                template = "seaborn",
-                color_discrete_map = {"Netherlands":"#b67a0c", "United Kingdom":"crimson", "United States":"steelblue"})
-
-figVacUK.update_traces(connectgaps=True)
-figVacUK.add_hline(y=90, line_width=2, line_dash="dash", opacity=0.2, annotation_text="<i>theoretical herd immunity</i>", annotation_position="top right")
-
-# Figuur attitudes UK
-def custom_legend_name(figure, new_names):
-    for i, new_name in enumerate(new_names):
-        figure.data[i].name = new_name
-
-
-figAttUK = px.line(  attUK,
-                x="date",
-                y=["unwilling", "uncertain", "willing"],
-                title='<b>Attitudes towards vaccination in the United Kingdom:</b>',
-                labels = {"date" : "Date",
-                          "value" : "Share of Population (%)"},
-                range_y = [0,100],
-                template = "seaborn",
-                color_discrete_map = {"unwilling":"black", "uncertain":"purple", "willing":"seagreen"})
-
-figAttUK.update_traces(connectgaps=True)
-custom_legend_name(figAttUK, ['unwilling to get vaccinated','uncertain about vaccination', "willing but not yet vaccinated"])
-
-# Figuur inkomensgroepen UK
-figIncomeUK = px.bar(  incomeUK,
-                    x='deprivation',
-                    y='vaccinated',
-                    title='<b>Vaccination level per deprivation class the United Kingdom:</b>',
-                    labels= {"deprivation" : "Index of Multiple Deprivation (IMD) Groups",
-                             "vaccinated" : "Vaccination Level (%) one-or-two doses"},
-                    range_y = [75,100],
-                    template = "seaborn")
-
-figIncomeUK.update_traces(marker_color='crimson')
-
-
-
-
 ## LAYOUT VAN PAGINA ------------------------------------------------------------------------------------------------
 
 layout = dbc.Container([
 
+
     dbc.Row([
+
         dbc.Col([
-            dcc.Graph(id='vaccinations_UK', figure=figVacUK)
-        ], width = {"size":9, "offset":2}),
+            html.P("Select countries to compare:",style={"fontStyle": "italic", "fontWeight":600})
+        ], width = {"size":2, "offset":3}, className="country-selection-instruction"),
+
+        dbc.Col([
+            dcc.Checklist(id='selected-countries',
+                          options= [{"label": "The Netherlands", "value":"Netherlands"},
+                                    {"label": "United Kingdom", "value":"United Kingdom"},
+                                    {"label": "United States", "value":"United States"}],
+                          value=['Netherlands', 'United Kingdom', 'United States'],
+                          labelClassName="radio-button")
+        ], width = {"size":4, "offset":0}, className="country-selection-box"),
+    ], className="country-selection-row"),
+
+    dbc.Row([
+
+        dbc.Col([
+            dcc.Graph(id='vaccinations_Comp', figure={})
+        ], width = {"size":8, "offset":2}),
+
         dbc.Col([
             #dcc.Graph(id='graph_name', figure={})
         ], width = {"size":0})
@@ -97,3 +65,28 @@ layout = dbc.Container([
 
 
 ], fluid = True)
+
+
+## FIGUREN MAKEN ------------------------------------------------------------------------------------------------
+
+# Figuur vaccinatiegraad
+
+@app.callback(
+    Output('vaccinations_Comp', 'figure'),
+    Input('selected-countries', 'value')
+)
+def update_graph(selected_countries):
+    figVacComp = px.line(  vacComp.loc[vacComp['location'].isin(selected_countries)],
+                    x="date",
+                    y="people_fully_vaccinated_per_hundred",
+                    color="location",
+                    title='<b>Vaccination level per Country:</b>',
+                    labels = {"people_fully_vaccinated_per_hundred" : "Vaccination Level (%)",
+                              "date" : "Date"},
+                    range_y = [0,100],
+                    template = "seaborn",
+                    color_discrete_map = {"Netherlands":"#b67a0c", "United Kingdom":"crimson", "United States":"steelblue"})
+
+    figVacComp.update_traces(connectgaps=True)
+    figVacComp.add_hline(y=90, line_width=2, line_dash="dash", opacity=0.2, annotation_text="<i>theoretical herd immunity</i>", annotation_position="top right")
+    return figVacComp

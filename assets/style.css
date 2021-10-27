@@ -1,3 +1,5 @@
+/* Adjust spacing and default colors of navigation bar */
+
 .justify-content-center.nav.nav-pills{
   margin-bottom: 60px;
   padding-top: 15px;
@@ -28,4 +30,34 @@
 
 .nav-pills .nav-link.active, .nav-pills .show>.nav-link{
   background-color: #00000047;
+}
+
+/* Create some space between radio buttons */
+
+.radio-button{
+  margin-right: 15px;
+}
+
+input[type="checkbox"]{
+  margin-right: 5px;
+}
+
+/* Styling for country selection box in comparison screen */
+
+.country-selection-instruction {
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
+  background: #f2f2f2;
+  padding-top: 15px;
+}
+
+.country-selection-box {
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
+  background: #f2f2f2;
+  padding-top: 15px;
+}
+
+.country-selection-row {
+  margin-bottom: 15px;
 }

@@ -1,3 +1,4 @@
 .DS_Store
+testfile.py
 __pycache__/
 apps/__pycache__
