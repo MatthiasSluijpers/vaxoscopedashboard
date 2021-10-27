@@ -32,6 +32,13 @@ ageUSA = pd.read_csv("data/agesUSA.csv")
 # Data inkomensgroepen USA
 incomeUSA = pd.read_csv("data/incomeUSA.csv")
 
+# Data gemeentes USA
+countiesUSAGeo = gpd.read_file("data/countiesUS.json")
+countiesUSAGeo.to_crs(pyproj.CRS.from_epsg(4326), inplace=True)
+countiesUSAData = pd.read_csv("data/countiesUS.csv")
+countiesUSAData["fips"] = countiesUSAData["fips"].astype("string")
+countiesUSAGeoData = countiesUSAGeo.set_index('id').join(countiesUSAData.set_index('fips'))
+
 
 
 ## FIGUREN MAKEN ------------------------------------------------------------------------------------------------
@@ -93,6 +100,18 @@ figIncomeUSA = px.bar(  incomeUSA,
 
 figIncomeUSA.update_traces(marker_color='steelblue')
 
+# Figuur counties USA
+figCountiesUSA = px.choropleth( countiesUSAGeoData,
+                            geojson=countiesUSAGeoData.geometry,
+                            locations=countiesUSAGeoData.index,
+                            color="vaccinated",
+                            title="<b>Vaccination level per US County:</b>",
+                            labels = {"vaccinated":"Vaccination Level (%)", "id":"County code"},
+                            color_continuous_scale = [[0,"red"], [0.6,"orange"], [1,"steelblue"]],
+                            template = "seaborn")
+figCountiesUSA.update_geos(fitbounds="locations", visible=False)
+figCountiesUSA.update_geos(projection_type="orthographic")
+
 
 
 
@@ -116,6 +135,12 @@ layout = dbc.Container([
         dbc.Col([
             dcc.Graph(id='income_USA', figure=figIncomeUSA)
         ], width = {"size":5})
+    ]),
+
+    dbc.Row([
+        dbc.Col([
+            dcc.Graph(id='counties_USA', figure=figCountiesUSA)
+        ], width = {"size":5, "offset":1}),
     ]),
 
 ], fluid = True)
