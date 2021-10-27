@@ -8,7 +8,7 @@ from app import app
 from app import server
 
 # Connect to your app pages
-from apps import NL, UK, USA
+from apps import NL, UK, USA, comparison
 
 
 navbar = dbc.Nav(
@@ -45,6 +45,8 @@ def render_page_content(pathname):
         return UK.layout
     if pathname == '/USA':
         return USA.layout
+    if pathname == '/Comparison':
+        return comparison.layout
     else:
         return "This page is not implemented yet."
 
