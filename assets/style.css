@@ -61,3 +61,22 @@ input[type="checkbox"]{
 .country-selection-row {
   margin-bottom: 15px;
 }
+
+/* Styling for attitude dropdown list */
+
+#attitude-dropwdown {
+  max-width: 400px;
+  margin: auto;
+}
+
+/* Styling for custom graph titles */
+
+.custom-graph-title {
+  margin: auto;
+  width: 100%;
+  font-size: 17px;
+  font-weight: 700;
+  font-family: "Open Sans", verdana, arial, sans-serif;
+  text-align: center;
+  margin-bottom: 30px;
+}
