@@ -168,7 +168,7 @@ def update_graph(US_location_dropwdown):
                                     geojson=statesUSAGeoData.geometry,
                                     locations=statesUSAGeoData.index,
                                     color="vaccinated",
-                                    labels = {"vaccinated":"Vaccination Level (%)", "id":"State"},
+                                    labels = {"vaccinated":"Vaccination Level (%)", "name":"State"},
                                     color_continuous_scale = [[0,"red"], [0.6,"orange"], [1,"steelblue"]],
                                     template = "seaborn")
         figLocationUSA.update_geos(fitbounds="locations", visible=False)
