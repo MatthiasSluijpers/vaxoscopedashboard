@@ -66,7 +66,7 @@ figAttNL = px.line(  attNL,
                 title='<b>Attitudes towards vaccination in The Netherlands:</b>',
                 labels = {"date" : "Date",
                           "value" : "Share of Population (%)",
-                          "variable" : "Attitude category"},
+                          "variable" : "Attitude category:"},
                 range_y = [0,100],
                 template = "seaborn",
                 color_discrete_map = {"unwilling":"black", "uncertain":"purple", "willing":"seagreen"})
@@ -81,7 +81,7 @@ figAgeNL = px.bar(  ageNL,
                     title='<b>Vaccination level per age group The Netherlands:</b>',
                     labels= {"age_group" : "Age Group",
                              "vaccinated" : "Vaccination Level (%)"},
-                    range_y = [0,100],
+                    range_y = [40,100],
                     template = "seaborn")
 
 figAgeNL.update_traces(marker_color='#b67a0c')

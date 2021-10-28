@@ -64,7 +64,7 @@ figAttUK = px.line(  attUK,
                 title='<b>Attitudes towards vaccination in the United Kingdom:</b>',
                 labels = {"date" : "Date",
                           "value" : "Share of Population (%)",
-                          "variable" : "Attitude Category"},
+                          "variable" : "Attitude category:"},
                 range_y = [0,100],
                 template = "seaborn",
                 color_discrete_map = {"unwilling":"black", "uncertain":"purple", "willing":"seagreen"})
