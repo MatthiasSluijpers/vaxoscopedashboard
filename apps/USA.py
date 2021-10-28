@@ -32,12 +32,18 @@ ageUSA = pd.read_csv("data/agesUSA.csv")
 # Data inkomensgroepen USA
 incomeUSA = pd.read_csv("data/incomeUSA.csv")
 
-# Data gemeentes USA
+# Data counties USA
 countiesUSAGeo = gpd.read_file("data/countiesUS.json")
 countiesUSAGeo.to_crs(pyproj.CRS.from_epsg(4326), inplace=True)
 countiesUSAData = pd.read_csv("data/countiesUS.csv")
 countiesUSAData["fips"] = countiesUSAData["fips"].astype("string")
 countiesUSAGeoData = countiesUSAGeo.set_index('id').join(countiesUSAData.set_index('fips'))
+
+# Data states USA
+statesUSAGeo = gpd.read_file("data/statesUS.json")
+statesUSAGeo.to_crs(pyproj.CRS.from_epsg(4326), inplace=True)
+statesUSAData = pd.read_csv("data/statesUS.csv")
+statesUSAGeoData = statesUSAGeo.set_index('name').join(statesUSAData.set_index('state'))
 
 
 
@@ -100,20 +106,6 @@ figIncomeUSA = px.bar(  incomeUSA,
 
 figIncomeUSA.update_traces(marker_color='steelblue')
 
-# Figuur counties USA
-figCountiesUSA = px.choropleth( countiesUSAGeoData,
-                            geojson=countiesUSAGeoData.geometry,
-                            locations=countiesUSAGeoData.index,
-                            color="vaccinated",
-                            title="<b>Vaccination level per US County:</b>",
-                            labels = {"vaccinated":"Vaccination Level (%)", "id":"County code"},
-                            color_continuous_scale = [[0,"red"], [0.6,"orange"], [1,"steelblue"]],
-                            template = "seaborn")
-figCountiesUSA.update_geos(fitbounds="locations", visible=False)
-figCountiesUSA.update_geos(projection_type="orthographic")
-
-
-
 
 ## LAYOUT VAN PAGINA ------------------------------------------------------------------------------------------------
 
@@ -139,8 +131,46 @@ layout = dbc.Container([
 
     dbc.Row([
         dbc.Col([
-            dcc.Graph(id='counties_USA', figure=figCountiesUSA)
+            html.Div([html.P("Vaccination level per US Location:")],
+                            className='custom-graph-title'),
+            dcc.Dropdown(   id='US-location-dropwdown', multi=False,
+                            options = [{"label": "US County Level", "value":"counties"},
+                                      {"label": "US State Level", "value":"states"}],
+                            value = "counties"),
+            dcc.Graph(id='counties_USA', figure={})
         ], width = {"size":5, "offset":1}),
     ]),
 
 ], fluid = True)
+
+## INTERACTIEVE FIGUREN MAKEN ------------------------------------------------------------------------------------------------
+
+# Figuur states en counties US
+
+@app.callback(
+    Output('counties_USA', 'figure'),
+    Input('US-location-dropwdown', 'value')
+)
+def update_graph(US_location_dropwdown):
+    figLocationUSA = {}
+    if US_location_dropwdown == "counties":
+        figLocationUSA = px.choropleth( countiesUSAGeoData,
+                                    geojson=countiesUSAGeoData.geometry,
+                                    locations=countiesUSAGeoData.index,
+                                    color="vaccinated",
+                                    labels = {"vaccinated":"Vaccination Level (%)", "id":"County code"},
+                                    color_continuous_scale = [[0,"red"], [0.6,"orange"], [1,"steelblue"]],
+                                    template = "seaborn")
+        figLocationUSA.update_geos(fitbounds="locations", visible=False)
+        figLocationUSA.update_geos(projection_type="orthographic")
+    elif US_location_dropwdown == "states":
+        figLocationUSA = px.choropleth( statesUSAGeoData,
+                                    geojson=statesUSAGeoData.geometry,
+                                    locations=statesUSAGeoData.index,
+                                    color="vaccinated",
+                                    labels = {"vaccinated":"Vaccination Level (%)", "id":"State"},
+                                    color_continuous_scale = [[0,"red"], [0.6,"orange"], [1,"steelblue"]],
+                                    template = "seaborn")
+        figLocationUSA.update_geos(fitbounds="locations", visible=False)
+        figLocationUSA.update_geos(projection_type="orthographic")
+    return figLocationUSA

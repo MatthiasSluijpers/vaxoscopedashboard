@@ -34,13 +34,14 @@
 
 /* Create some space between radio buttons */
 
-.radio-button{
+.checkbox-list {
   margin-right: 15px;
 }
 
 input[type="checkbox"]{
   margin-right: 5px;
 }
+
 
 /* Styling for country selection box in comparison screen */
 
@@ -62,9 +63,16 @@ input[type="checkbox"]{
   margin-bottom: 15px;
 }
 
-/* Styling for attitude dropdown list */
+/* Styling for attitude dropdown list in comparison screen */
 
 #attitude-dropwdown {
+  max-width: 400px;
+  margin: auto;
+}
+
+/* Styling for location level dropdoen list in USA screen */
+
+#US-location-dropwdown {
   max-width: 400px;
   margin: auto;
 }
@@ -79,4 +87,5 @@ input[type="checkbox"]{
   font-family: "Open Sans", verdana, arial, sans-serif;
   text-align: center;
   margin-bottom: 30px;
+  margin-top: 20px;
 }

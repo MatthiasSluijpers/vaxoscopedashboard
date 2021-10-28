@@ -44,7 +44,7 @@ layout = dbc.Container([
                                     {"label": "United Kingdom", "value":"United Kingdom"},
                                     {"label": "United States", "value":"United States"}],
                           value=['Netherlands', 'United Kingdom', 'United States'],
-                          labelClassName="radio-button")
+                          labelClassName="checkbox-list")
         ], width = {"size":4, "offset":0}, className="country-selection-box"),
     ], className="country-selection-row"),
 
@@ -83,7 +83,7 @@ layout = dbc.Container([
 ], fluid = True)
 
 
-## FIGUREN MAKEN ------------------------------------------------------------------------------------------------
+## INTERACTIEVE FIGUREN MAKEN ------------------------------------------------------------------------------------------------
 
 # Figuur vaccinatiegraad
 
@@ -115,9 +115,6 @@ def update_graph(selected_countries):
      Input('attitude-dropwdown', 'value')]
 )
 def update_graph(selected_countries, attitude_dropdown):
-    def custom_legend_name(figure, new_names):
-        for i, new_name in enumerate(new_names):
-            figure.data[i].name = new_name
     figAttComp = px.line(attComp.loc[attComp['country'].isin(selected_countries)],
                     x="date",
                     y= attitude_dropdown,
@@ -128,5 +125,4 @@ def update_graph(selected_countries, attitude_dropdown):
                     template = "seaborn",
                     color_discrete_map = {"unwilling":"black", "uncertain":"purple", "willing":"seagreen"})
     figAttComp.update_traces(connectgaps=True)
-    #custom_legend_name(attComp, ['unwilling to get vaccinated','uncertain about vaccination', "willing but not yet vaccinated"])
     return figAttComp
