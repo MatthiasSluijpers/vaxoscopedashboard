@@ -136,7 +136,7 @@ layout = dbc.Container([
             dcc.Dropdown(   id='US-location-dropwdown', multi=False,
                             options = [{"label": "US County Level", "value":"counties"},
                                       {"label": "US State Level", "value":"states"}],
-                            value = "counties"),
+                            value = "states"),
             dcc.Graph(id='counties_USA', figure={})
         ], width = {"size":5, "offset":1}),
     ]),
