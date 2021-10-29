@@ -15,24 +15,24 @@ import dash_bootstrap_components as dbc
 ## DATA OPHALEN ------------------------------------------------------------------------------------------------
 
 # Data vaccinatiegraad NL
-vaccinations = pd.read_csv("data/vaccinations.csv")
+vaccinations = pd.read_csv("data/backup/vaccinations.csv")
 vacNL = vaccinations.copy()
 vacNL = vacNL[vacNL["location"] == "Netherlands"][["location", "date","people_fully_vaccinated_per_hundred"]]
 vacNL.dropna(inplace = True)
 
 # Data attitudes NL
-attitudes = pd.read_csv("data/attitudes.csv")
+attitudes = pd.read_csv("data/backup/attitudes.csv")
 attNL = attitudes.copy()
 attNL = attNL[attNL["Entity"] == "Netherlands"]
 attNL.columns = ["country", "code", "date", "unwilling", "uncertain", "willing", "vaccinated"]
 
 # Data leeftijdsgroepen NL
-ageNL = pd.read_csv("data/agesNL.csv")
+ageNL = pd.read_csv("data/backup/agesNL.csv")
 
 # Data gemeentes NL
-municNLGeo = gpd.read_file("data/municipalitiesNL.json")
+municNLGeo = gpd.read_file("data/geometry/municipalitiesNL.json")
 municNLGeo.to_crs(pyproj.CRS.from_epsg(4326), inplace=True)
-municNLData = pd.read_csv("data/municNL.csv")
+municNLData = pd.read_csv("data/backup/municNL.csv")
 municNLGeoData = municNLGeo.set_index('statnaam').join(municNLData.set_index('region'))
 
 

@@ -15,23 +15,23 @@ import dash_bootstrap_components as dbc
 ## DATA OPHALEN ------------------------------------------------------------------------------------------------
 
 # Data vaccinatiegraad UK
-vaccinations = pd.read_csv("data/vaccinations.csv")
+vaccinations = pd.read_csv("data/backup/vaccinations.csv")
 vacUK = vaccinations.copy()
 vacUK = vacUK[vacUK["location"] == "United Kingdom"][["location", "date","people_fully_vaccinated_per_hundred"]]
 vacUK.dropna(inplace = True)
 
 # Data attitudes UK
-attitudes = pd.read_csv("data/attitudes.csv")
+attitudes = pd.read_csv("data/backup/attitudes.csv")
 attUK = attitudes.copy()
 attUK = attUK[attUK["Entity"] == "United Kingdom"]
 attUK.columns = ["country", "code", "date", "unwilling", "uncertain", "willing", "vaccinated"]
 
 # Data inkomensgroepen UK
-incomeUK = pd.read_csv("data/incomeUK.csv")
+incomeUK = pd.read_csv("data/backup/incomeUK.csv")
 
 # Data lower tier local authorities UK
-ltlaUKGeo = gpd.read_file("data/ltlaUK.json")
-ltlaUKData = pd.read_csv("data/ltlaUK.csv", sep=";")
+ltlaUKGeo = gpd.read_file("data/geometry/ltlaUK.json")
+ltlaUKData = pd.read_csv("data/backup/ltlaUK.csv", sep=";")
 ltlaUKGeoData = ltlaUKGeo.set_index('AREANM').join(ltlaUKData.set_index('ltla_name'))
 
 

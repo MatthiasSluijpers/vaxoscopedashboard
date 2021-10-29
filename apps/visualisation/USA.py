@@ -15,34 +15,34 @@ import dash_bootstrap_components as dbc
 ## DATA OPHALEN ------------------------------------------------------------------------------------------------
 
 # Data vaccinatiegraad USA
-vaccinations = pd.read_csv("data/vaccinations.csv")
+vaccinations = pd.read_csv("data/backup/vaccinations.csv")
 vacUSA = vaccinations.copy()
 vacUSA = vacUSA[vacUSA["location"] == "United States"][["location", "date","people_fully_vaccinated_per_hundred"]]
 vacUSA.dropna(inplace = True)
 
 # Data attitudes USA
-attitudes = pd.read_csv("data/attitudes.csv")
+attitudes = pd.read_csv("data/backup/attitudes.csv")
 attUSA = attitudes.copy()
 attUSA = attUSA[attUSA["Entity"] == "United States"]
 attUSA.columns = ["country", "code", "date", "unwilling", "uncertain", "willing", "vaccinated"]
 
 # Data leeftijdsgroepen USA
-ageUSA = pd.read_csv("data/agesUSA.csv")
+ageUSA = pd.read_csv("data/backup/agesUSA.csv")
 
 # Data inkomensgroepen USA
-incomeUSA = pd.read_csv("data/incomeUSA.csv")
+incomeUSA = pd.read_csv("data/backup/incomeUSA.csv")
 
 # Data counties USA
-countiesUSAGeo = gpd.read_file("data/countiesUS.json")
+countiesUSAGeo = gpd.read_file("data/geometry/countiesUS.json")
 countiesUSAGeo.to_crs(pyproj.CRS.from_epsg(4326), inplace=True)
-countiesUSAData = pd.read_csv("data/countiesUS.csv")
+countiesUSAData = pd.read_csv("data/backup/countiesUS.csv")
 countiesUSAData["fips"] = countiesUSAData["fips"].astype("string")
 countiesUSAGeoData = countiesUSAGeo.set_index('id').join(countiesUSAData.set_index('fips'))
 
 # Data states USA
-statesUSAGeo = gpd.read_file("data/statesUS.json")
+statesUSAGeo = gpd.read_file("data/geometry/statesUS.json")
 statesUSAGeo.to_crs(pyproj.CRS.from_epsg(4326), inplace=True)
-statesUSAData = pd.read_csv("data/statesUS.csv")
+statesUSAData = pd.read_csv("data/backup/statesUS.csv")
 statesUSAGeoData = statesUSAGeo.set_index('name').join(statesUSAData.set_index('state'))
 
 

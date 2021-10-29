@@ -15,13 +15,13 @@ import dash_bootstrap_components as dbc
 ## DATA OPHALEN ------------------------------------------------------------------------------------------------
 
 # Data vaccinatiegraad COMP
-vaccinations = pd.read_csv("data/vaccinations.csv")
+vaccinations = pd.read_csv("data/backup/vaccinations.csv")
 vacComp = vaccinations.copy()
 vacComp = vacComp.loc[vacComp["location"].isin(["Netherlands", "United Kingdom", "United States"])][["location", "date","people_fully_vaccinated_per_hundred"]]
 vacComp.dropna(inplace = True)
 
 # Data attitudes COMP
-attitudes = pd.read_csv("data/attitudes.csv")
+attitudes = pd.read_csv("data/backup/attitudes.csv")
 attComp = attitudes.copy()
 attComp.columns = ["country", "code", "date", "unwilling", "uncertain", "willing", "vaccinated"]
 attComp = attComp.loc[attComp["country"].isin(["Netherlands", "United Kingdom", "United States"])]
