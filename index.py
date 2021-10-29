@@ -34,7 +34,7 @@ app.layout = dbc.Container([dcc.Location(id="url"), navbar, content], fluid=True
 
 def municRecNL():
     m = NL.municNLData
-    m = m.sort_values(by='vaccinated').iloc[0:11,0].to_string(index=False)
+    m = m.sort_values(by='vaccinated').iloc[0:10,0].to_string(index=False)
     m = re.sub('\s+',' ',m).strip().replace(" ", ", ")
     return m
 
@@ -46,7 +46,7 @@ def ageRecNL():
 
 def ltlaRecUK():
     l = UK.ltlaUKData
-    l = l.sort_values(by='vaccinated').iloc[0:11,1].to_string(index=False)
+    l = l.sort_values(by='vaccinated').iloc[0:10,1].to_string(index=False)
     l = l.replace('\n', ",")
     l = re.sub('\s+',' ',l).strip()
     return l
@@ -59,7 +59,7 @@ def incomeRecUK():
 
 def stateRecUSA():
     c = USA.statesUSAData
-    c = c.sort_values(by='vaccinated').iloc[0:11,0].to_string(index=False)
+    c = c.sort_values(by='vaccinated').iloc[0:10,0].to_string(index=False)
     c = c.replace("\n", ", ")
     c = re.sub('\s+',' ',c).strip()
     return c
