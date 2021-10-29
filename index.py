@@ -57,6 +57,41 @@ def incomeRecUK():
     i = i.to_string(index=False)
     return i
 
+def stateRecUSA():
+    c = USA.statesUSAData
+    c = c.sort_values(by='vaccinated').iloc[0:10,0].to_string(index=False)
+    c = c.replace("\n", ", ")
+    c = re.sub('\s+',' ',c).strip()
+    return c
+
+def ageRecUSA():
+    a = USA.ageUSA
+    a = a[a["vaccinated"] == a["vaccinated"].min()]["age_group"]
+    a = a.to_string(index=False)
+    return a
+
+def incomeRecUSA():
+    i = USA.incomeUSA
+    # Line below excludes "no income reported" class as this is no clear target group
+    # LET OP: VERANDER LINE ONDER als deze klasse bij uiteindelijke dataset andere naam heeft
+    i = i[i["income"] != "No Income Reported"]
+    i = i[i["vaccinated"] == i["vaccinated"].min()]["income"]
+    i = i.to_string(index=False)
+    return i
+
+def highestVacComp():
+    v = comparison.vacComp
+    v = v.loc[v["location"].isin(["Netherlands", "United Kingdom", "United States"])]
+    v = v[v["people_fully_vaccinated_per_hundred"]==v["people_fully_vaccinated_per_hundred"].max()]["location"]
+    v = v.to_string(index=False)
+    return v
+
+def highestUnwilComp():
+    a = comparison.attComp
+    a = a[a["unwilling"]==a["unwilling"].max()]["country"]
+    a = a.to_string(index=False)
+    return a
+
 
 
 # DEFINE HOMESCREEN LAYOUT -----------------------------------------------------------------------
@@ -64,7 +99,9 @@ def incomeRecUK():
 home_layout = dbc.Container([
 
 dbc.Row([
-    dbc.Col([html.H3("Welcome! Please select a category above to start.")
+    dbc.Col([html.H3("""Welcome! Please select a category above to start
+                        or view the direct target group reports below.""",
+                        className="introduction-message"),
     ],width = {"size":6, "offset":3})
     ]),
 
@@ -78,10 +115,8 @@ dbc.Row([
                     className = "target-report-text"),
             html.Div([html.P("Age group: " + ageRecNL() + " (top target).")],
                     className = "target-report-text"),
-            html.Div([html.P("Recommended based on characteristics of groups with lowest vaccination degree in available data.")],
-                    className = "target-report-explanation"),
         ],className='target-report-card target-report-card-NL'),
-    ],width = {"size":4, "offset":1}),
+    ],width = {"size":4, "offset":0}, className="target-report-col"),
 
         dbc.Col([
             html.Div([
@@ -91,11 +126,48 @@ dbc.Row([
                         className = "target-report-text"),
                 html.Div([html.P("Deprivation group: " + incomeRecUK() + " (top target).")],
                         className = "target-report-text"),
-                html.Div([html.P("Recommended based on characteristics of groups with lowest vaccination degree in available data.")],
-                        className = "target-report-explanation"),
             ],className='target-report-card target-report-card-UK'),
-        ],width = {"size":4, "offset":1}),
+        ],width = {"size":4, "offset":0}, className="target-report-col"),
+
+        ], justify = "center"),
+
+dbc.Row([
+
+        dbc.Col([
+            html.Div([
+                html.Div([html.P("American target group estimation:")],
+                        className = "target-report-title target-report-title-USA"),
+                html.Div([html.P("States: " + stateRecUSA() + " (top-ten targets).")],
+                        className = "target-report-text"),
+                html.Div([html.P("Age group: " + ageRecUSA() + " (top target).")],
+                        className = "target-report-text"),
+                html.Div([html.P("Income group: " + incomeRecUSA() + " (top target).")],
+                        className = "target-report-text"),
+            ],className='target-report-card target-report-card-USA'),
+        ],width = {"size":4, "offset":0}, className="target-report-col"),
+
+        dbc.Col([
+            html.Div([
+                html.Div([html.P("Country vaccination success:")],
+                        className = "target-report-title target-report-title-comp"),
+                html.Div([html.P("Country with the highest vaccination degree: " + highestVacComp() + " (of the three included in dashboard).")],
+                        className = "target-report-text"),
+                html.Div([html.P("Country with most citizens unwilling to take vaccine: " + highestUnwilComp() + " (of the three included in dashboard).")],
+                        className = "target-report-text"),
+            ],className='target-report-card target-report-card-comp'),
+        ],width = {"size":4, "offset":0}, className="target-report-col"),
+
+        ], justify = "center"),
+
+dbc.Row([
+        dbc.Col([
+            html.Div([html.P("""Recommendations based on characteristics of groups with lowest vaccination degree in available data.
+            Note that further medical considerations (e.g. high-risk groups) are not accounted for.
+            Use the seperate country screens to identify additional target groups.""")],
+                 className = "target-report-explanation"),],
+         width = {"size":6, "offset":3}),
         ]),
+
 ])
 
 # UPDATE APP LAYOUT -----------------------------------------------------------------------------
