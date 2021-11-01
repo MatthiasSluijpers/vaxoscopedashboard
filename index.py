@@ -10,6 +10,7 @@ from app import server
 
 # Connect to seperate app screens
 from apps.visualisation import NL, UK, USA, comparison
+from apps.preparation import preparation
 
 # DEFINE GLOBAL APP LAYOUT -----------------------------------------------------------------------
 

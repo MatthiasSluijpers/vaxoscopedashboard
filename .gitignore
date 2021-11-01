@@ -2,3 +2,4 @@
 testfile.py
 __pycache__/
 apps/__pycache__
+venv/

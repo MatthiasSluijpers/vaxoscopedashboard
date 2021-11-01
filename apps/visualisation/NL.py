@@ -9,16 +9,22 @@ import pyproj
 import pathlib
 from app import app
 import dash_bootstrap_components as dbc
-
+from apps.preparation import preparation
 
 
 ## DATA OPHALEN ------------------------------------------------------------------------------------------------
 
+# Data vaccinatiegraad NL OUD
+# vaccinations = pd.read_csv("data/backup/vaccinations.csv")
+# vacNL = vaccinations.copy()
+# vacNL = vacNL[vacNL["location"] == "Netherlands"][["location", "date","people_fully_vaccinated_per_hundred"]]
+# vacNL.dropna(inplace = True)
+
 # Data vaccinatiegraad NL
-vaccinations = pd.read_csv("data/backup/vaccinations.csv")
-vacNL = vaccinations.copy()
-vacNL = vacNL[vacNL["location"] == "Netherlands"][["location", "date","people_fully_vaccinated_per_hundred"]]
+vacNL = preparation.vaccCov
+vacNL = vacNL[vacNL["country"] == "NL"][["country", "date","coverage_full_dose"]]
 vacNL.dropna(inplace = True)
+
 
 # Data attitudes NL
 attitudes = pd.read_csv("data/backup/attitudes.csv")
@@ -43,9 +49,9 @@ municNLGeoData = municNLGeo.set_index('statnaam').join(municNLData.set_index('re
 # Figuur vaccinatiegraad NL
 figVacNL = px.line(  vacNL,
                 x="date",
-                y="people_fully_vaccinated_per_hundred",
+                y="coverage_full_dose",
                 title='<b>Vaccination level in The Netherlands:</b>',
-                labels = {"people_fully_vaccinated_per_hundred" : "Vaccination Level (%)",
+                labels = {"coverage_full_dose" : "Vaccination Level (%)",
                           "date" : "Date"},
                 range_y = [0,100],
                 template = "seaborn")
