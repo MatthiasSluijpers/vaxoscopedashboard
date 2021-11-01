@@ -9,22 +9,32 @@ import pyproj
 import pathlib
 from app import app
 import dash_bootstrap_components as dbc
+from apps.preparation import preparation
 
 
 
 ## DATA OPHALEN ------------------------------------------------------------------------------------------------
 
-# Data vaccinatiegraad UK
-vaccinations = pd.read_csv("data/backup/vaccinations.csv")
-vacUK = vaccinations.copy()
-vacUK = vacUK[vacUK["location"] == "United Kingdom"][["location", "date","people_fully_vaccinated_per_hundred"]]
+# # Data vaccinatiegraad UK OUD
+# vaccinations = pd.read_csv("data/backup/vaccinations.csv")
+# vacUK = vaccinations.copy()
+# vacUK = vacUK[vacUK["location"] == "United Kingdom"][["location", "date","people_fully_vaccinated_per_hundred"]]
+# vacUK.dropna(inplace = True)
+
+# Data vaccination coverage UK
+vacUK = preparation.vaccCov
+vacUK = vacUK[vacUK["country"] == "UK"][["country", "date","coverage_full_dose"]]
 vacUK.dropna(inplace = True)
 
-# Data attitudes UK
-attitudes = pd.read_csv("data/backup/attitudes.csv")
-attUK = attitudes.copy()
-attUK = attUK[attUK["Entity"] == "United Kingdom"]
-attUK.columns = ["country", "code", "date", "unwilling", "uncertain", "willing", "vaccinated"]
+# Data attitudes UK OUD
+# attitudes = pd.read_csv("data/backup/attitudes.csv")
+# attUK = attitudes.copy()
+# attUK = attUK[attUK["Entity"] == "United Kingdom"]
+# attUK.columns = ["country", "code", "date", "unwilling", "uncertain", "willing", "vaccinated"]
+
+# Data vaccination attitudes UK
+attUK = preparation.vaccAttitudes
+attUK = attUK[attUK["country"] == "UK"]
 
 # Data inkomensgroepen UK
 incomeUK = pd.read_csv("data/backup/incomeUK.csv")
@@ -41,9 +51,9 @@ ltlaUKGeoData = ltlaUKGeo.set_index('AREANM').join(ltlaUKData.set_index('ltla_na
 # Figuur vaccinatiegraad UK
 figVacUK = px.line(  vacUK,
                 x="date",
-                y="people_fully_vaccinated_per_hundred",
+                y="coverage_full_dose",
                 title='<b>Vaccination level in the United Kingdom:</b>',
-                labels = {"people_fully_vaccinated_per_hundred" : "Vaccination Level (%)",
+                labels = {"coverage_full_dose" : "Vaccination Level (%)",
                           "date" : "Date"},
                 range_y = [0,100],
                 template = "seaborn")
@@ -60,14 +70,14 @@ def custom_legend_name(figure, new_names):
 
 figAttUK = px.line(  attUK,
                 x="date",
-                y=["unwilling", "uncertain", "willing"],
+                y=["unwilling_percentage", "uncertain_percentage", "willing_percentage"],
                 title='<b>Attitudes towards vaccination in the United Kingdom:</b>',
                 labels = {"date" : "Date",
                           "value" : "Share of Population (%)",
                           "variable" : "Attitude category:"},
                 range_y = [0,100],
                 template = "seaborn",
-                color_discrete_map = {"unwilling":"black", "uncertain":"purple", "willing":"seagreen"})
+                color_discrete_map = {"unwilling_percentage":"black", "uncertain_percentage":"purple", "willing_percentage":"seagreen"})
 
 figAttUK.update_traces(connectgaps=True)
 custom_legend_name(figAttUK, ['unwilling to get vaccinated','uncertain about vaccination', "willing but not yet vaccinated"])

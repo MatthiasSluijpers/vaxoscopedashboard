@@ -82,14 +82,14 @@ def incomeRecUSA():
 
 def highestVacComp():
     v = comparison.vacComp
-    v = v.loc[v["location"].isin(["Netherlands", "United Kingdom", "United States"])]
-    v = v[v["people_fully_vaccinated_per_hundred"]==v["people_fully_vaccinated_per_hundred"].max()]["location"]
+    v = v.loc[v["country"].isin(["NL", "UK", "US"])]
+    v = v[v["coverage_full_dose"]==v["coverage_full_dose"].max()]["country"]
     v = v.to_string(index=False)
     return v
 
 def highestUnwilComp():
     a = comparison.attComp
-    a = a[a["unwilling"]==a["unwilling"].max()]["country"]
+    a = a[a["unwilling_percentage"]==a["unwilling_percentage"].max()]["country"]
     a = a.to_string(index=False)
     return a
 

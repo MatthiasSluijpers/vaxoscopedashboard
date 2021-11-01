@@ -41,4 +41,41 @@ def prepareVaccCovAll():
     vaccCov['country'] = vaccCov['country'].replace("GBR", "UK")
     vaccCov['country'] = vaccCov['country'].replace("NLD", "NL")
 
+# Vaccination attitudes for all three countries:
+def prepareVaccAttitudes():
+    # Load data
+    # Note: make sure the most recent datafile is stored in the "raw" data-folder.
+    # This file can be downloaded via 'https://ourworldindata.org/covid-vaccinations#attitudes-to-covid-19-vaccinations'
+    # Select 'Download' under the 'Willingness to get vaccinated against COVID-19'-graph
+    global vaccAttitudes
+    vaccAttitudes = pd.read_csv('data/raw/covid-vaccine-willingness-and-people-vaccinated-by-country.csv')
+
+    # Select relevant columns
+    vaccAttitudes = vaccAttitudes[['Day', 'Code', 'people_vaccinated_per_hundred', 'willingness_covid_vaccinate_this_week_pct_pop', 'uncertain_covid_vaccinate_this_week_pct_pop', 'unwillingness_covid_vaccinate_this_week_pct_pop']]
+
+    # Select relevant countries
+    countries = ['USA', 'GBR', 'NLD']
+    vaccAttitudes = vaccAttitudes.loc[vaccAttitudes['Code'].isin(countries)]
+
+    # Drop duplicates (check before and after)
+    vaccAttitudes = vaccAttitudes.drop_duplicates()
+
+    # Rename columns
+    vaccAttitudes = vaccAttitudes.rename(columns={'Day': 'date'})
+    vaccAttitudes = vaccAttitudes.rename(columns={'Code': 'country'})
+    vaccAttitudes = vaccAttitudes.rename(columns={'people_vaccinated_per_hundred': 'vaccinated_one_dose_percentage'})
+    vaccAttitudes = vaccAttitudes.rename(columns={'willingness_covid_vaccinate_this_week_pct_pop': 'willing_percentage'})
+    vaccAttitudes = vaccAttitudes.rename(columns={'uncertain_covid_vaccinate_this_week_pct_pop': 'uncertain_percentage'})
+    vaccAttitudes = vaccAttitudes.rename(columns={'unwillingness_covid_vaccinate_this_week_pct_pop': 'unwilling_percentage'})
+    # Note: the total of Vaccinated, willing, uncertain, and unwilling is always 100%.
+
+    # Change data types
+    vaccAttitudes['date']= pd.to_datetime(vaccAttitudes['date'])
+
+    # Change 'country' values to correct abbreviations
+    vaccAttitudes['country'] = vaccAttitudes['country'].replace("USA", "US")
+    vaccAttitudes['country'] = vaccAttitudes['country'].replace("GBR", "UK")
+    vaccAttitudes['country'] = vaccAttitudes['country'].replace("NLD", "NL")
+
+prepareVaccAttitudes()
 prepareVaccCovAll()

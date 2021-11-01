@@ -20,17 +20,21 @@ from apps.preparation import preparation
 # vacNL = vacNL[vacNL["location"] == "Netherlands"][["location", "date","people_fully_vaccinated_per_hundred"]]
 # vacNL.dropna(inplace = True)
 
-# Data vaccinatiegraad NL
+# Data vaccination coverage NL
 vacNL = preparation.vaccCov
 vacNL = vacNL[vacNL["country"] == "NL"][["country", "date","coverage_full_dose"]]
 vacNL.dropna(inplace = True)
 
 
-# Data attitudes NL
-attitudes = pd.read_csv("data/backup/attitudes.csv")
-attNL = attitudes.copy()
-attNL = attNL[attNL["Entity"] == "Netherlands"]
-attNL.columns = ["country", "code", "date", "unwilling", "uncertain", "willing", "vaccinated"]
+# # Data attitudes NL OUD
+# attitudes = pd.read_csv("data/backup/attitudes.csv")
+# attNL = attitudes.copy()
+# attNL = attNL[attNL["Entity"] == "Netherlands"]
+# attNL.columns = ["country", "code", "date", "unwilling", "uncertain", "willing", "vaccinated"]
+
+# Data vaccination attitudes UK
+attNL = preparation.vaccAttitudes
+attNL = attNL[attNL["country"] == "NL"]
 
 # Data leeftijdsgroepen NL
 ageNL = pd.read_csv("data/backup/agesNL.csv")
@@ -68,14 +72,14 @@ def custom_legend_name(figure, new_names):
 
 figAttNL = px.line(  attNL,
                 x="date",
-                y=["unwilling", "uncertain", "willing"],
+                y=["unwilling_percentage", "uncertain_percentage", "willing_percentage"],
                 title='<b>Attitudes towards vaccination in The Netherlands:</b>',
                 labels = {"date" : "Date",
                           "value" : "Share of Population (%)",
                           "variable" : "Attitude category:"},
                 range_y = [0,100],
                 template = "seaborn",
-                color_discrete_map = {"unwilling":"black", "uncertain":"purple", "willing":"seagreen"})
+                color_discrete_map = {"unwilling_percentage":"black", "uncertain_percentage":"purple", "willing_percentage":"seagreen"})
 
 figAttNL.update_traces(connectgaps=True)
 custom_legend_name(figAttNL, ['unwilling to get vaccinated','uncertain about vaccination', "willing but not yet vaccinated"])
