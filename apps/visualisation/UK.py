@@ -39,6 +39,10 @@ attUK = attUK[attUK["country"] == "UK"]
 # Data inkomensgroepen UK
 incomeUK = pd.read_csv("data/backup/incomeUK.csv")
 
+# Data age groups UK
+ageUK = preparation.vaccAge
+ageUK = ageUK[ageUK["country"] == "UK"]
+
 # Data lower tier local authorities UK
 ltlaUKGeo = gpd.read_file("data/geometry/ltlaUK.json")
 ltlaUKData = pd.read_csv("data/backup/ltlaUK.csv", sep=";")
@@ -94,6 +98,18 @@ figIncomeUK = px.bar(  incomeUK,
 
 figIncomeUK.update_traces(marker_color='crimson')
 
+# Figure age groups NL
+figAgeUK = px.bar(  ageUK,
+                    x='age_group',
+                    y='coverage_full_dose',
+                    title='<b>Vaccination level per age group The Netherlands:</b>',
+                    labels= {"age_group" : "Age Group",
+                             "coverage_full_dose" : "Vaccination Level (%)"},
+                    range_y = [40,100],
+                    template = "seaborn")
+
+figAgeUK.update_traces(marker_color='crimson')
+
 # Figuur lower tier local authorities UK
 figLtlaUK = px.choropleth( ltlaUKGeoData,
                             geojson=ltlaUKGeoData.geometry,
@@ -123,11 +139,17 @@ layout = dbc.Container([
 
     dbc.Row([
         dbc.Col([
-            dcc.Graph(id='income_UK', figure=figIncomeUK)
+            dcc.Graph(id='age_UK', figure=figAgeUK)
         ], width = {"size":5, "offset":1}),
         dbc.Col([
             dcc.Graph(id='region_UK', figure=figLtlaUK)
         ], width = {"size":5})
+    ]),
+
+    dbc.Row([
+        dbc.Col([
+            dcc.Graph(id='income_UK', figure=figIncomeUK)
+        ], width = {"size":5, "offset":1}),
     ]),
 
 ], fluid = True)

@@ -41,7 +41,7 @@ def municRecNL():
 
 def ageRecNL():
     a = NL.ageNL
-    a = a[a["vaccinated"] == a["vaccinated"].min()]["age_group"]
+    a = a[a["coverage_full_dose"] == a["coverage_full_dose"].min()]["age_group"]
     a = a.to_string(index=False)
     return a
 
@@ -67,7 +67,7 @@ def stateRecUSA():
 
 def ageRecUSA():
     a = USA.ageUSA
-    a = a[a["vaccinated"] == a["vaccinated"].min()]["age_group"]
+    a = a[a["coverage_full_dose"] == a["coverage_full_dose"].min()]["age_group"]
     a = a.to_string(index=False)
     return a
 

@@ -38,7 +38,8 @@ attUSA = attUSA[attUSA["country"] == "US"]
 
 
 # Data leeftijdsgroepen USA
-ageUSA = pd.read_csv("data/backup/agesUSA.csv")
+ageUSA = preparation.vaccAge
+ageUSA = ageUSA[ageUSA["country"] == "US"]
 
 # Data inkomensgroepen USA
 incomeUSA = pd.read_csv("data/backup/incomeUSA.csv")
@@ -97,10 +98,10 @@ custom_legend_name(figAttUSA, ['unwilling to get vaccinated','uncertain about va
 # Figuur leeftijdsgroepen USA
 figAgeUSA = px.bar(  ageUSA,
                     x='age_group',
-                    y='vaccinated',
+                    y='coverage_full_dose',
                     title='<b>Vaccination level per age group the United States:</b>',
                     labels= {"age_group" : "Age Group",
-                             "vaccinated" : "Vaccination Level (%)"},
+                             "coverage_full_dose" : "Vaccination Level (%)"},
                     range_y = [40,100],
                     template = "seaborn")
 

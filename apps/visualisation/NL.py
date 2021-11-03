@@ -36,8 +36,9 @@ vacNL.dropna(inplace = True)
 attNL = preparation.vaccAttitudes
 attNL = attNL[attNL["country"] == "NL"]
 
-# Data leeftijdsgroepen NL
-ageNL = pd.read_csv("data/backup/agesNL.csv")
+# Data age groups NL
+ageNL = preparation.vaccAge
+ageNL = ageNL[ageNL["country"] == "NL"]
 
 # Data gemeentes NL
 municNLGeo = gpd.read_file("data/geometry/municipalitiesNL.json")
@@ -87,10 +88,10 @@ custom_legend_name(figAttNL, ['unwilling to get vaccinated','uncertain about vac
 # Figuur leeftijdsgroepen NL
 figAgeNL = px.bar(  ageNL,
                     x='age_group',
-                    y='vaccinated',
+                    y='coverage_full_dose',
                     title='<b>Vaccination level per age group The Netherlands:</b>',
                     labels= {"age_group" : "Age Group",
-                             "vaccinated" : "Vaccination Level (%)"},
+                             "coverage_full_dose" : "Vaccination Level (%)"},
                     range_y = [40,100],
                     template = "seaborn")
 
