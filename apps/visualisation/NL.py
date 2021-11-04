@@ -99,12 +99,12 @@ figAgeNL.update_traces(marker_color='#b67a0c')
 
 
 # Figuur gemeentes NL
-figMunicNL = px.choropleth( municNLGeoData,
-                            geojson=municNLGeoData.geometry,
-                            locations=municNLGeoData.index,
-                            color="vaccinated",
+figMunicNL = px.choropleth( preparation.vaccLocNL,
+                            geojson=preparation.vaccLocNL.geometry,
+                            locations=preparation.vaccLocNL.index,
+                            color="coverage_full_dose",
                             title="<b>Vaccination level per Dutch municipality:</b>",
-                            labels = {"vaccinated":"Vaccination Level (%)", "statnaam":"Municipality"},
+                            labels = {"coverage_full_dose":"Vaccination Level (%)", "statnaam":"Municipality"},
                             color_continuous_scale = [[0,"red"], [0.6,"orange"], [1,"steelblue"]],
                             template = "seaborn")
 figMunicNL.update_geos(fitbounds="locations", visible=False)

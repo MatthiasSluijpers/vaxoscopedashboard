@@ -167,21 +167,21 @@ layout = dbc.Container([
 def update_graph(US_location_dropwdown):
     figLocationUSA = {}
     if US_location_dropwdown == "counties":
-        figLocationUSA = px.choropleth( countiesUSAGeoData,
-                                    geojson=countiesUSAGeoData.geometry,
-                                    locations=countiesUSAGeoData.index,
-                                    color="vaccinated",
-                                    labels = {"vaccinated":"Vaccination Level (%)", "id":"County code"},
+        figLocationUSA = px.choropleth( preparation.vaccLocUSCounty,
+                                    geojson=preparation.vaccLocUSCounty.geometry,
+                                    locations=preparation.vaccLocUSCounty.index,
+                                    color="coverage_full_dose",
+                                    labels = {"coverage_full_dose":"Vaccination Level (%)", "index":"County code"},
                                     color_continuous_scale = [[0,"red"], [0.6,"orange"], [1,"steelblue"]],
                                     template = "seaborn")
-        figLocationUSA.update_geos(fitbounds="locations", visible=False)
-        figLocationUSA.update_geos(projection_type="orthographic")
+        figLocationUSA.update_geos(fitbounds="locations", visible=True)
+        figLocationUSA.update_geos(projection_type="natural earth")
     elif US_location_dropwdown == "states":
-        figLocationUSA = px.choropleth( statesUSAGeoData,
-                                    geojson=statesUSAGeoData.geometry,
-                                    locations=statesUSAGeoData.index,
-                                    color="vaccinated",
-                                    labels = {"vaccinated":"Vaccination Level (%)", "name":"State"},
+        figLocationUSA = px.choropleth( preparation.vaccLocUSState,
+                                    geojson=preparation.vaccLocUSState.geometry,
+                                    locations=preparation.vaccLocUSState.index,
+                                    color="coverage_full_dose",
+                                    labels = {"coverage_full_dose":"Vaccination Level (%)", "name":"State"},
                                     color_continuous_scale = [[0,"red"], [0.6,"orange"], [1,"steelblue"]],
                                     template = "seaborn")
         figLocationUSA.update_geos(fitbounds="locations", visible=False)

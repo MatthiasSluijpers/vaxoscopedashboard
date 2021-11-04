@@ -111,12 +111,12 @@ figAgeUK = px.bar(  ageUK,
 figAgeUK.update_traces(marker_color='crimson')
 
 # Figuur lower tier local authorities UK
-figLtlaUK = px.choropleth( ltlaUKGeoData,
-                            geojson=ltlaUKGeoData.geometry,
-                            locations=ltlaUKGeoData.index,
-                            color="vaccinated",
+figLtlaUK = px.choropleth( preparation.vaccLocUK,
+                            geojson=preparation.vaccLocUK.geometry,
+                            locations=preparation.vaccLocUK.index,
+                            color="coverage_full_dose",
                             title="<b>Vaccination level per UK Lower Tier Local Authority:</b>",
-                            labels = {"vaccinated":"Vaccination Level (%)", "AREANM":"Lower Tier Local Authority"},
+                            labels = {"coverage_full_dose":"Vaccination Level (%)", "AREANM":"Lower Tier Local Authority"},
                             color_continuous_scale = [[0,"red"], [0.6,"orange"], [1,"steelblue"]],
                             template = "seaborn")
 figLtlaUK.update_geos(fitbounds="locations", visible=False)

@@ -6,7 +6,9 @@
 
 ## IMPORT LIBRARIES ------------------------------------------------------------
 import pandas as pd
+import geopandas as gpd
 import numpy as np
+import pyproj
 
 ## RETRIEVE AND PREPARE DATA ---------------------------------------------------
 
@@ -125,8 +127,12 @@ def prepareVaccAgeNL():
     nlAge.insert(3, 'count_full_dose', np.nan)
     nlAge['country'] = 'NL'
 
-    # Return data
-    return nlAge
+    # Set column order
+    nlAge = nlAge[['date', 'country', 'age_group', 'count_one_dose', 'coverage_one_dose', 'count_full_dose', 'coverage_full_dose']]
+
+    # Make data available
+    global vaccAgeNL
+    vaccAgeNL = nlAge
 
 
 # Vaccination coverage per age level for UK
@@ -163,8 +169,12 @@ def prepareVaccAgeUK():
     # Filter by latest date
     ukAge = ukAge[ukAge["date"]==ukAge["date"].max()]
 
-    # Return data
-    return ukAge
+    # Set column order
+    ukAge = ukAge[['date', 'country', 'age_group', 'count_one_dose', 'coverage_one_dose', 'count_full_dose', 'coverage_full_dose']]
+
+    # Make data available
+    global vaccAgeUK
+    vaccAgeUK = ukAge
 
 # Vaccination coverage per age level for US
 def prepareVaccAgeUS():
@@ -217,27 +227,257 @@ def prepareVaccAgeUS():
     # Sort by age group
     usaAge = usaAge.sort_values(by="age_group")
 
-    # Return data
-    return usaAge
+    # Set column order
+    usaAge = usaAge[['date', 'country', 'age_group', 'count_one_dose', 'coverage_one_dose', 'count_full_dose', 'coverage_full_dose']]
+
+    # Make data available
+    global vaccAgeUS
+    vaccAgeUS = usaAge
 
 # Vaccination coverage per age level for all countries
 def prepareVaccAgeAll():
 
     # First retrieve and prepare vaccination coverage per age for each seperate country
-    nlAge = prepareVaccAgeNL()
-    ukAge = prepareVaccAgeUK()
-    usaAge = prepareVaccAgeUS()
+    prepareVaccAgeNL()
+    prepareVaccAgeUK()
+    prepareVaccAgeUS()
 
     # Then merge tables into one table
     global vaccAge
-    vaccAge = pd.concat([nlAge, ukAge, usaAge], ignore_index=True, sort=False)
+    vaccAge = pd.concat([vaccAgeNL, vaccAgeUK, vaccAgeUS], ignore_index=True, sort=False)
     vaccAge = vaccAge[['date', 'country', 'age_group', 'count_one_dose', 'coverage_one_dose', 'count_full_dose', 'coverage_full_dose']]
 
-    vaccAge
+# Vaccination coverage per municipality location in NL
+def prepareVaccLocNL():
 
-    vaccAge.age_group.unique()
+    # Load data
+    global vaccLocNL
+    vaccLocNL = pd.read_csv('https://data.rivm.nl/data/covid-19/COVID-19_vaccinatiegraad_per_gemeente_per_week_leeftijd.csv', sep=';')
+
+    # Replace outliers with NaNs
+    vaccLocNL['Vaccination_coverage_partly'] = vaccLocNL['Vaccination_coverage_partly'].replace(">=95", np.nan)
+    vaccLocNL['Vaccination_coverage_partly'] = vaccLocNL['Vaccination_coverage_partly'].replace("9999", np.nan)
+    vaccLocNL['Vaccination_coverage_completed'] = vaccLocNL['Vaccination_coverage_completed'].replace(">=95", np.nan)
+    vaccLocNL['Vaccination_coverage_completed'] = vaccLocNL['Vaccination_coverage_completed'].replace("9999", np.nan)
+
+    # Replace Dutch Region_level names with English translations
+    vaccLocNL['Region_level'] = vaccLocNL['Region_level'].replace("Gemeente", "Municipality")
+    vaccLocNL['Region_level'] = vaccLocNL['Region_level'].replace("Veiligheidsregio", "Safety region")
+
+    # Make the vaccination coverages floats
+    vaccLocNL['Vaccination_coverage_partly'] = vaccLocNL['Vaccination_coverage_partly'].astype('float')
+    vaccLocNL['Vaccination_coverage_completed'] = vaccLocNL['Vaccination_coverage_completed'].astype('float')
+
+    # Select relevant columns
+    vaccLocNL = vaccLocNL[['Region_level', 'Region_code', 'Region_name', 'Birth_year','Date_of_statistics',  'Vaccination_coverage_completed', 'Vaccination_coverage_partly']]
+
+    # Drop duplicates (check before and after)
+    vaccLocNL = vaccLocNL.drop_duplicates()
+
+    # Rename columns
+    vaccLocNL = vaccLocNL.rename(columns={'Date_of_statistics': 'date'})
+    vaccLocNL = vaccLocNL.rename(columns={'Region_level': 'location_level'})
+    vaccLocNL = vaccLocNL.rename(columns={'Region_name': 'location_name'})
+    vaccLocNL = vaccLocNL.rename(columns={'Region_code': 'location_code'})
+    vaccLocNL = vaccLocNL.rename(columns={'Birth_year': 'age_group'})
+    vaccLocNL = vaccLocNL.rename(columns={'Vaccination_coverage_partly': 'coverage_one_dose'})
+    vaccLocNL = vaccLocNL.rename(columns={'Vaccination_coverage_completed': 'coverage_full_dose'})
+
+    # Change data types
+    vaccLocNL = vaccLocNL.astype({'date': 'datetime64[ns]'})
+
+    # Add 'count_one_dose', 'count_full_dose', and 'country' column
+    vaccLocNL.insert(4, 'count_full_dose', np.nan)
+    vaccLocNL.insert(5, 'count_one_dose', np.nan)
+    vaccLocNL['country'] = 'NL'
+
+    # Filter by municipality level
+    vaccLocNL = vaccLocNL[vaccLocNL["location_level"]=="Municipality"]
+
+    # Filter by latest date
+    vaccLocNL = vaccLocNL[vaccLocNL["date"] == vaccLocNL["date"].max()]
+
+    # Filter by aged 12+
+    vaccLocNL = vaccLocNL[vaccLocNL["age_group"] == "<2004"]
+
+    # Drop age group column
+    vaccLocNL = vaccLocNL.drop(labels = "age_group", axis=1)
+
+    # Match and merge data with country geography to draw map
+    geoNL = gpd.read_file("data/geometry/municipalitiesNL.json")
+    geoNL.to_crs(pyproj.CRS.from_epsg(4326), inplace=True)
+    vaccLocNL = geoNL.set_index('statnaam').join(vaccLocNL.set_index('location_name'))
+
+# Vaccination coverage per lower tier local authority location in UK
+def prepareVaccLocUK():
+
+    # Load data - note: limited metrics used due to slow datasource server response
+    global vaccLocUK
+    vaccLocUK = pd.read_csv("https://api.coronavirus.data.gov.uk/v2/data?areaType=ltla&metric=cumVaccinationCompleteCoverageByVaccinationDatePercentage&format=csv")
+
+    # Drop unnecessary column
+    del vaccLocUK['areaType']
+
+    # Drop duplicates (check before and after)
+    vaccLocUK = vaccLocUK.drop_duplicates()
+
+    # Rename columns NOTE: difference between location_name and location_code
+    vaccLocUK = vaccLocUK.rename(columns={'areaName': 'location_name'})
+    vaccLocUK = vaccLocUK.rename(columns={'areaCode': 'location_code'})
+    vaccLocUK = vaccLocUK.rename(columns={'cumVaccinationCompleteCoverageByVaccinationDatePercentage': 'coverage_full_dose'})
+
+    # Change data types
+    vaccLocUK['date']= pd.to_datetime(vaccLocUK['date'])
+
+    # Add 'location_level' and 'country' column
+    vaccLocUK.insert(0, 'location_level', 'Lower tier local authority')
+    vaccLocUK['country'] = 'UK'
+
+    # Filter by latest date
+    vaccLocUK = vaccLocUK[vaccLocUK["date"]==vaccLocUK["date"].max()]
+
+    # Match and merge data with country geography to draw map
+    geoUK = gpd.read_file("data/geometry/ltlaUK.json")
+    vaccLocUK = geoUK.set_index('AREANM').join(vaccLocUK.set_index('location_name'))
+
+# Vaccination coverage per county and state location in US
+def prepareVaccLocUS():
+
+    # (1/2) Location on county level:
+
+    # Load data
+    global vaccLocUSCounty
+    vaccLocUSCounty = pd.read_csv("https://data.cdc.gov/resource/8xkx-amqh.csv?$limit=10000")
+
+    # Select relevant columns
+    vaccLocUSCounty = vaccLocUSCounty[['date','fips','recip_county','series_complete_pop_pct','series_complete_yes','administered_dose1_recip','administered_dose1_pop_pct']]
+
+    # Rename columns
+    vaccLocUSCounty = vaccLocUSCounty.rename(columns={'recip_county': 'location_name'})
+    vaccLocUSCounty = vaccLocUSCounty.rename(columns={'fips': 'location_code'})
+    vaccLocUSCounty = vaccLocUSCounty.rename(columns={'administered_dose1_recip': 'count_one_dose'})
+    vaccLocUSCounty = vaccLocUSCounty.rename(columns={'administered_dose1_pop_pct': 'coverage_one_dose'})
+    vaccLocUSCounty = vaccLocUSCounty.rename(columns={'series_complete_yes': 'count_full_dose'})
+    vaccLocUSCounty = vaccLocUSCounty.rename(columns={'series_complete_pop_pct': 'coverage_full_dose'})
+
+    # Change data types
+    vaccLocUSCounty = vaccLocUSCounty.astype({'date': 'datetime64[ns]'})
+
+    # Drop duplicates
+    vaccLocUSCounty = vaccLocUSCounty.drop_duplicates()
+
+    # Add 'location_level' and 'country' column
+    vaccLocUSCounty.insert(0, 'location_level', 'County')
+    vaccLocUSCounty['country'] = 'US'
+
+    # Filter by latest date
+    vaccLocUSCounty = vaccLocUSCounty[vaccLocUSCounty["date"]==vaccLocUSCounty["date"].max()]
+
+    # Match and merge data with country geography to draw map
+    geoUSCounties = gpd.read_file("data/geometry/countiesUS.json")
+    geoUSCounties.to_crs(pyproj.CRS.from_epsg(4326), inplace=True)
+    vaccLocUSCounty["location_code"] = vaccLocUSCounty["location_code"].astype("string")
+    vaccLocUSCounty = geoUSCounties.set_index('id').join(vaccLocUSCounty.set_index('location_code'))
+
+    # (2/2) Location on state level:
+
+    # Load data
+    global vaccLocUSState
+    vaccLocUSState = pd.read_csv("https://data.cdc.gov/resource/unsk-b7fc.csv?$limit=200")
+    vaccLocUSState = vaccLocUSState[['date','location','series_complete_pop_pct','series_complete_yes','administered_dose1_recip','administered_dose1_pop_pct']]
+
+    # Rename columns
+    vaccLocUSState = vaccLocUSState.rename(columns={'location': 'location_name'})
+    vaccLocUSState = vaccLocUSState.rename(columns={'fips': 'location_code'})
+    vaccLocUSState = vaccLocUSState.rename(columns={'administered_dose1_recip': 'count_one_dose'})
+    vaccLocUSState = vaccLocUSState.rename(columns={'administered_dose1_pop_pct': 'coverage_one_dose'})
+    vaccLocUSState = vaccLocUSState.rename(columns={'series_complete_yes': 'count_full_dose'})
+    vaccLocUSState = vaccLocUSState.rename(columns={'series_complete_pop_pct': 'coverage_full_dose'})
+
+    # Change data types
+    vaccLocUSState = vaccLocUSState.astype({'date': 'datetime64[ns]'})
+
+    # Drop duplicates
+    vaccLocUSState = vaccLocUSState.drop_duplicates()
+
+    # Add 'location_level' and 'country' column
+    vaccLocUSState.insert(0, 'location_level', 'County')
+    vaccLocUSState['country'] = 'US'
+
+    # Recode state names
+    stateNames = {"AL" : "Alabama",
+                  "AK" : "Alaska",
+                  "AZ" : "Arizona",
+                  "AR" : "Arkansas",
+                  "CA" : "California",
+                  "CO" : "Colorado",
+                  "CT" : "Connecticut",
+                  "DE" : "Delaware",
+                  "DC" : "District of Columbia",
+                  "FL" : "Florida",
+                  "GA" : "Georgia",
+                  "HI" : "Hawaii",
+                  "ID" : "Idaho",
+                  "IL" : "Illinois",
+                  "IN" : "Indiana",
+                  "IA" : "Iowa",
+                  "KS" : "Kansas",
+                  "KY" : "Kentucky",
+                  "LA" : "Louisiana",
+                  "ME" : "Maine",
+                  "MD" : "Maryland",
+                  "MA" : "Massachusetts",
+                  "MI" : "Michigan",
+                  "MN" : "Minnesota",
+                  "MS" : "Mississippi",
+                  "MO" : "Missouri",
+                  "MT" : "Montana",
+                  "NE" : "Nebraska",
+                  "NV" : "Nevada",
+                  "NH" : "New Hampshire",
+                  "NJ" : "New Jersey",
+                  "NM" : "New Mexico",
+                  "NY" : "New York",
+                  "NC" : "North Carolina",
+                  "ND" : "North Dakota",
+                  "OH" : "Ohio",
+                  "OK" : "Oklahoma",
+                  "OR" : "Oregon",
+                  "PA" : "Pennsylvania",
+                  "RI" : "Rhode Island",
+                  "SC" : "South Carolina",
+                  "SD" : "South Dakota",
+                  "TN" : "Tennessee",
+                  "TX" : "Texas",
+                  "UT" : "Utah",
+                  "VT" : "Vermont",
+                  "VA" : "Virginia",
+                  "WA" : "Washington",
+                  "WV" : "West Virginia",
+                  "WI" : "Wisconsin",
+                  "WY" : "Wyoming"
+                 }
+
+    vaccLocUSState['location_name'] = vaccLocUSState['location_name'].map(stateNames).fillna(vaccLocUSState['location_name'])
+
+    # Filter by latest date
+    vaccLocUSState = vaccLocUSState[vaccLocUSState["date"]==vaccLocUSState["date"].max()]
+
+    # Match and merge data with country geography to draw map
+    geoUSStates = gpd.read_file("data/geometry/statesUS.json")
+    geoUSStates.to_crs(pyproj.CRS.from_epsg(4326), inplace=True)
+    vaccLocUSState = geoUSStates.set_index('name').join(vaccLocUSState.set_index('location_name'))
 
 
+# Vaccination coverage per location for all three countries
+def prepareVaccLocAll():
+
+    # Retrieve and prepare vaccination coverage per location for each country
+    prepareVaccLocUS()
+    prepareVaccLocNL()
+    prepareVaccLocUK()
+
+prepareVaccLocAll()
 prepareVaccAgeAll()
 prepareVaccAttitudesAll()
 prepareVaccCovAll()
