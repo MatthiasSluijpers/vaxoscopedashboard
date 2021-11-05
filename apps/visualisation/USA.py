@@ -174,8 +174,10 @@ def update_graph(US_location_dropwdown):
                                     labels = {"coverage_full_dose":"Vaccination Level (%)", "index":"County code"},
                                     color_continuous_scale = [[0,"red"], [0.6,"orange"], [1,"steelblue"]],
                                     template = "seaborn")
-        figLocationUSA.update_geos(fitbounds="locations", visible=True)
-        figLocationUSA.update_geos(projection_type="natural earth")
+        figLocationUSA.update_geos(fitbounds=False, visible=True)
+        figLocationUSA.update_geos(projection_rotation_lon=-100)
+        figLocationUSA.update_geos(projection_rotation_lat=40)
+        figLocationUSA.update_geos(projection_type="orthographic")
     elif US_location_dropwdown == "states":
         figLocationUSA = px.choropleth( preparation.vaccLocUSState,
                                     geojson=preparation.vaccLocUSState.geometry,
@@ -184,6 +186,8 @@ def update_graph(US_location_dropwdown):
                                     labels = {"coverage_full_dose":"Vaccination Level (%)", "name":"State"},
                                     color_continuous_scale = [[0,"red"], [0.6,"orange"], [1,"steelblue"]],
                                     template = "seaborn")
-        figLocationUSA.update_geos(fitbounds="locations", visible=False)
+        figLocationUSA.update_geos(fitbounds=False, visible=True)
+        figLocationUSA.update_geos(projection_rotation_lon=-100)
+        figLocationUSA.update_geos(projection_rotation_lat=40)
         figLocationUSA.update_geos(projection_type="orthographic")
     return figLocationUSA
