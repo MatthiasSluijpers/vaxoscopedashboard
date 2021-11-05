@@ -87,22 +87,22 @@ figAttUK.update_traces(connectgaps=True)
 custom_legend_name(figAttUK, ['unwilling to get vaccinated','uncertain about vaccination', "willing but not yet vaccinated"])
 
 # Figuur inkomensgroepen UK
-figIncomeUK = px.bar(  incomeUK,
-                    x='deprivation',
-                    y='vaccinated',
-                    title='<b>Vaccination level per deprivation class the United Kingdom:</b>',
-                    labels= {"deprivation" : "Index of Multiple Deprivation (IMD) Groups",
-                             "vaccinated" : "Vaccination Level (%) one-or-two doses"},
+figIncomeUK = px.bar(  preparation.vaccIncomeUK,
+                    x='income_group',
+                    y='coverage_one_dose',
+                    title='<b>Vaccination level per deprivation class in the United Kingdom:</b>',
+                    labels= {"income_group" : "Index of Multiple Deprivation (IMD) Groups",
+                             "coverage_one_dose" : "Vaccination Level (%) adults, one-or-two doses"},
                     range_y = [75,100],
                     template = "seaborn")
 
 figIncomeUK.update_traces(marker_color='crimson')
 
-# Figure age groups NL
+# Figure age groups UK
 figAgeUK = px.bar(  ageUK,
                     x='age_group',
                     y='coverage_full_dose',
-                    title='<b>Vaccination level per age group The Netherlands:</b>',
+                    title='<b>Vaccination level per age group in the United Kingdom:</b>',
                     labels= {"age_group" : "Age Group",
                              "coverage_full_dose" : "Vaccination Level (%)"},
                     range_y = [40,100],

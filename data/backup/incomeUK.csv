@@ -1,6 +1,6 @@
-deprivation,vaccinated
-Most deprived,86
-2nd quintile,89
-3rd quintile,91
-4th quintile,91
-Least deprived,92
+income_group,coverage_one_dose,date,age_group,country
+Most deprived,86,2021-06-23 to 2021-07-18,18+,UK
+2nd quintile,89,2021-06-23 to 2021-07-18,18+,UK
+3rd quintile,91,2021-06-23 to 2021-07-18,18+,UK
+4th quintile,91,2021-06-23 to 2021-07-18,18+,UK
+Least deprived,92,2021-06-23 to 2021-07-18,18+,UK

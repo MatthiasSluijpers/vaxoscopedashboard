@@ -45,10 +45,15 @@ def prepareVaccCovAll():
 
 # Vaccination attitudes for all three countries:
 def prepareVaccAttitudesAll():
+
+
+    # Note: this data cannot be dynamically retrieved as there is no stable url/api.
+    # Instead: make sure that the most recent datafile is stored in the "raw" data-folder.
+    # Pointer: file can be downloaded via 'https://ourworldindata.org/covid-vaccinations#attitudes-to-covid-19-vaccinations'
+    # How to: on this page, select 'Download' under the 'Willingness to get vaccinated against COVID-19'-graph.
+    # Otherwise: dashboard will use version of the dataset that is pre-included with this code (from 01-11-2021).
+
     # Load data
-    # Note: make sure the most recent datafile is stored in the "raw" data-folder.
-    # This file can be downloaded via 'https://ourworldindata.org/covid-vaccinations#attitudes-to-covid-19-vaccinations'
-    # Select 'Download' under the 'Willingness to get vaccinated against COVID-19'-graph
     global vaccAttitudes
     vaccAttitudes = pd.read_csv('data/raw/covid-vaccine-willingness-and-people-vaccinated-by-country.csv')
 
@@ -477,6 +482,59 @@ def prepareVaccLocAll():
     prepareVaccLocNL()
     prepareVaccLocUK()
 
+
+# Vaccination coverage per income for NL
+def prepareVaccIncomeNL():
+
+    # Note: currently no open data is available for vaccination coverage per income group in NL.
+    # Therefore: this function is a placeholder that creates an empty dataframe with expected structure.
+    # Extendable: function can be updated if data becomes available in future.
+
+    global vaccIncomeNL
+    vaccIncomeNL = pd.DataFrame()
+    vaccIncomeNL['date'] = np.NaN
+    vaccIncomeNL['income_group'] = np.NaN
+    vaccIncomeNL['coverage_one_dose'] = np.NaN
+    vaccIncomeNL['coverage_full_dose'] = np.NaN
+    vaccIncomeNL['count_one_dose'] = np.NaN
+    vaccIncomeNL['count_full_dose'] = np.NaN
+    vaccIncomeNL['country'] = "NL"
+
+# Vaccination coverage per income for UK
+def prepareVaccIncomeUK():
+
+    # Note: this data cannot be dynamically retrieved as there is no stable url/api.
+    # Furthermore: data source did not update data for last few months, next release date unkown.
+    # Reference: see 'https://www.ons.gov.uk/peoplepopulationandcommunity/healthandsocialcare/healthandwellbeing/datasets/coronavirusandvaccinehesitancygreatbritain'
+    # Instead: dashboard uses pre-included and pre-processed version of dataset from July 2021 (most recent version during development).
+
+    # Load data
+    global vaccIncomeUK
+    vaccIncomeUK = pd.read_csv("data/backup/incomeUK.csv")
+
+# Vaccination coverage per income for US
+def prepareVaccIncomeUS():
+
+    # Note: this data cannot be dynamically retrieved as there is no stable url/api.
+    # Furthermore: structure of data prone to change, thereby disallowing automation.
+    # Reference: see table 5a from 'https://www.census.gov/data/tables/2021/demo/hhp/hhp39.html'
+    # Instead: dashboard uses pre-included and pre-processed version of dataset from October 2021 (most recent version during development).
+    # Update: data can be updated by manually extracting relevant statistics and calculating coverage per income group.
+
+    # Load data
+    global vaccIncomeUS
+    vaccIncomeUS = pd.read_csv("data/backup/incomeUSA.csv")
+
+
+# Vaccination coverage per income group for all three countries
+def prepareVaccIncomeAll():
+
+    # Retrieve and prepare vaccination coverage per income group for each country
+    prepareVaccIncomeUK()
+    prepareVaccIncomeNL()
+    prepareVaccIncomeUS()
+
+prepareVaccIncomeAll()
 prepareVaccLocAll()
 prepareVaccAgeAll()
 prepareVaccAttitudesAll()

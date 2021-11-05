@@ -54,7 +54,7 @@ def ltlaRecUK():
 
 def incomeRecUK():
     i = UK.incomeUK
-    i = i[i["vaccinated"] == i["vaccinated"].min()]["deprivation"]
+    i = i[i["coverage_one_dose"] == i["coverage_one_dose"].min()]["income_group"]
     i = i.to_string(index=False)
     return i
 
@@ -75,8 +75,8 @@ def incomeRecUSA():
     i = USA.incomeUSA
     # Line below excludes "no income reported" class as this is no clear target group
     # LET OP: VERANDER LINE ONDER als deze klasse bij uiteindelijke dataset andere naam heeft
-    i = i[i["income"] != "No Income Reported"]
-    i = i[i["vaccinated"] == i["vaccinated"].min()]["income"]
+    i = i[i["income_group"] != "No Income Reported"]
+    i = i[i["coverage_full_dose"] == i["coverage_full_dose"].min()]["income_group"]
     i = i.to_string(index=False)
     return i
 
@@ -85,12 +85,18 @@ def highestVacComp():
     v = v.loc[v["country"].isin(["NL", "UK", "US"])]
     v = v[v["coverage_full_dose"]==v["coverage_full_dose"].max()]["country"]
     v = v.to_string(index=False)
+    v = v.replace("NL","The Netherlands")
+    v = v.replace("UK","United Kingdom")
+    v = v.replace("US","United States")
     return v
 
 def highestUnwilComp():
     a = comparison.attComp
     a = a[a["unwilling_percentage"]==a["unwilling_percentage"].max()]["country"]
     a = a.to_string(index=False)
+    a = a.replace("NL","The Netherlands")
+    a = a.replace("UK","United Kingdom")
+    a = a.replace("US","United States")
     return a
 
 

@@ -108,12 +108,12 @@ figAgeUSA = px.bar(  ageUSA,
 figAgeUSA.update_traces(marker_color='steelblue')
 
 # Figuur inkomensgroepen USA
-figIncomeUSA = px.bar(  incomeUSA,
-                    x='income',
-                    y='vaccinated',
+figIncomeUSA = px.bar(  preparation.vaccIncomeUS,
+                    x='income_group',
+                    y='coverage_full_dose',
                     title='<b>Vaccination level per income group the United States:</b>',
-                    labels= {"income" : "Income Group",
-                             "vaccinated" : "Vaccination Level (%)"},
+                    labels= {"income_group" : "Income Group",
+                             "coverage_full_dose" : "Vaccination Level (%)"},
                     range_y = [40,100],
                     template = "seaborn")
 
@@ -177,6 +177,7 @@ def update_graph(US_location_dropwdown):
         figLocationUSA.update_geos(fitbounds=False, visible=True)
         figLocationUSA.update_geos(projection_rotation_lon=-100)
         figLocationUSA.update_geos(projection_rotation_lat=40)
+        figLocationUSA.update_geos(projection_scale=1.5)
         figLocationUSA.update_geos(projection_type="orthographic")
     elif US_location_dropwdown == "states":
         figLocationUSA = px.choropleth( preparation.vaccLocUSState,
