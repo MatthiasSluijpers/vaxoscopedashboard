@@ -13,63 +13,17 @@ from apps.preparation import preparation
 
 
 
-## DATA OPHALEN ------------------------------------------------------------------------------------------------
-
-# Data vaccinatiegraad USA OUD
-# vaccinations = pd.read_csv("data/backup/vaccinations.csv")
-# vacUSA = vaccinations.copy()
-# vacUSA = vacUSA[vacUSA["location"] == "United States"][["location", "date","people_fully_vaccinated_per_hundred"]]
-# vacUSA.dropna(inplace = True)
-
-# Data vaccination coverage USA
-vacUSA = preparation.vaccCov
-vacUSA = vacUSA[vacUSA["country"] == "US"][["country", "date","coverage_full_dose"]]
-vacUSA.dropna(inplace = True)
-
-# Data attitudes USA OUD
-# attitudes = pd.read_csv("data/backup/attitudes.csv")
-# attUSA = attitudes.copy()
-# attUSA = attUSA[attUSA["Entity"] == "United States"]
-# attUSA.columns = ["country", "code", "date", "unwilling", "uncertain", "willing", "vaccinated"]
-
-# Data vaccination attitudes USA
-attUSA = preparation.vaccAttitudes
-attUSA = attUSA[attUSA["country"] == "US"]
-
-
-# Data leeftijdsgroepen USA
-ageUSA = preparation.vaccAge
-ageUSA = ageUSA[ageUSA["country"] == "US"]
-
-# Data inkomensgroepen USA
-incomeUSA = pd.read_csv("data/backup/incomeUSA.csv")
-
-# Data counties USA
-countiesUSAGeo = gpd.read_file("data/geometry/countiesUS.json")
-countiesUSAGeo.to_crs(pyproj.CRS.from_epsg(4326), inplace=True)
-countiesUSAData = pd.read_csv("data/backup/countiesUS.csv")
-countiesUSAData["fips"] = countiesUSAData["fips"].astype("string")
-countiesUSAGeoData = countiesUSAGeo.set_index('id').join(countiesUSAData.set_index('fips'))
-
-# Data states USA
-statesUSAGeo = gpd.read_file("data/geometry/statesUS.json")
-statesUSAGeo.to_crs(pyproj.CRS.from_epsg(4326), inplace=True)
-statesUSAData = pd.read_csv("data/backup/statesUS.csv")
-statesUSAGeoData = statesUSAGeo.set_index('name').join(statesUSAData.set_index('state'))
-
-
-
 ## FIGUREN MAKEN ------------------------------------------------------------------------------------------------
 
 # Figuur vaccinatiegraad USA
-figVacUSA = px.line(  vacUSA,
-                x="date",
-                y="coverage_full_dose",
-                title='<b>Vaccination level in the United States:</b>',
-                labels = {"coverage_full_dose" : "Vaccination Level (%)",
-                          "date" : "Date"},
-                range_y = [0,100],
-                template = "seaborn")
+figVacUSA = px.line(preparation.vaccCovUS,
+                    x="date",
+                    y="coverage_full_dose",
+                    title='<b>Vaccination level in the United States:</b>',
+                    labels = {"coverage_full_dose" : "Vaccination Level (%)",
+                              "date" : "Date"},
+                    range_y = [0,100],
+                    template = "seaborn")
 
 figVacUSA.update_traces(connectgaps=True)
 figVacUSA.update_traces(line_color="steelblue")
@@ -81,22 +35,22 @@ def custom_legend_name(figure, new_names):
         figure.data[i].name = new_name
 
 
-figAttUSA = px.line(  attUSA,
-                x="date",
-                y=["unwilling_percentage", "uncertain_percentage", "willing_percentage"],
-                title='<b>Attitudes towards vaccination in the United States:</b>',
-                labels = {"date" : "Date",
-                          "value" : "Share of Population (%)",
-                          "variable" : "Attitude category:"},
-                range_y = [0,100],
-                template = "seaborn",
-                color_discrete_map = {"unwilling_percentage":"black", "uncertain_percentage":"purple", "willing_percentage":"seagreen"})
+figAttUSA = px.line(preparation.vaccAttitudesUS,
+                    x="date",
+                    y=["unwilling_percentage", "uncertain_percentage", "willing_percentage"],
+                    title='<b>Attitudes towards vaccination in the United States:</b>',
+                    labels = {"date" : "Date",
+                              "value" : "Share of Population (%)",
+                              "variable" : "Attitude category:"},
+                    range_y = [0,100],
+                    template = "seaborn",
+                    color_discrete_map = {"unwilling_percentage":"black", "uncertain_percentage":"purple", "willing_percentage":"seagreen"})
 
 figAttUSA.update_traces(connectgaps=True)
 custom_legend_name(figAttUSA, ['unwilling to get vaccinated','uncertain about vaccination', "willing but not yet vaccinated"])
 
 # Figuur leeftijdsgroepen USA
-figAgeUSA = px.bar(  preparation.vaccAgeUS,
+figAgeUSA = px.bar( preparation.vaccAgeUS,
                     x='age_group',
                     y='coverage_full_dose',
                     title='<b>Vaccination level per age group the United States:</b>',
@@ -109,13 +63,13 @@ figAgeUSA.update_traces(marker_color='steelblue')
 
 # Figuur inkomensgroepen USA
 figIncomeUSA = px.bar(  preparation.vaccIncomeUS,
-                    x='income_group',
-                    y='coverage_full_dose',
-                    title='<b>Vaccination level per income group the United States:</b>',
-                    labels= {"income_group" : "Income Group",
-                             "coverage_full_dose" : "Vaccination Level (%)"},
-                    range_y = [40,100],
-                    template = "seaborn")
+                        x='income_group',
+                        y='coverage_full_dose',
+                        title='<b>Vaccination level per income group the United States:</b>',
+                        labels= {"income_group" : "Income Group",
+                                 "coverage_full_dose" : "Vaccination Level (%)"},
+                        range_y = [40,100],
+                        template = "seaborn")
 
 figIncomeUSA.update_traces(marker_color='steelblue')
 

@@ -43,6 +43,22 @@ def prepareVaccCovAll():
     vaccCov['country'] = vaccCov['country'].replace("GBR", "UK")
     vaccCov['country'] = vaccCov['country'].replace("NLD", "NL")
 
+    # Drop missing values
+    vaccCov = vaccCov.dropna(subset=["date", "coverage_full_dose"])
+
+    # Also provide smaller seperate versions for each of the three countries
+    global vaccCovNL
+    vaccCovNL = vaccCov
+    vaccCovNL = vaccCovNL[vaccCovNL["country"] == "NL"][["country", "date","coverage_full_dose"]]
+
+    global vaccCovUK
+    vaccCovUK = vaccCov
+    vaccCovUK = vaccCovUK[vaccCovUK["country"] == "UK"][["country", "date","coverage_full_dose"]]
+
+    global vaccCovUS
+    vaccCovUS = vaccCov
+    vaccCovUS = vaccCovUS[vaccCovUS["country"] == "US"][["country", "date","coverage_full_dose"]]
+
 # Vaccination attitudes for all three countries:
 def prepareVaccAttitudesAll():
 
@@ -83,6 +99,19 @@ def prepareVaccAttitudesAll():
     vaccAttitudes['country'] = vaccAttitudes['country'].replace("USA", "US")
     vaccAttitudes['country'] = vaccAttitudes['country'].replace("GBR", "UK")
     vaccAttitudes['country'] = vaccAttitudes['country'].replace("NLD", "NL")
+
+    # Also provide seperate versions for each of the three countries
+    global vaccAttitudesNL
+    vaccAttitudesNL = vaccAttitudes
+    vaccAttitudesNL = vaccAttitudesNL[vaccAttitudesNL["country"] == "NL"]
+
+    global vaccAttitudesUK
+    vaccAttitudesUK = vaccAttitudes
+    vaccAttitudesUK = vaccAttitudesUK[vaccAttitudesUK["country"] == "UK"]
+
+    global vaccAttitudesUS
+    vaccAttitudesUS = vaccAttitudes
+    vaccAttitudesUS = vaccAttitudesUS[vaccAttitudesUS["country"] == "US"]
 
 
 # Vaccination coverage per age level for NL

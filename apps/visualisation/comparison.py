@@ -13,30 +13,6 @@ from apps.preparation import preparation
 
 
 
-## DATA OPHALEN ------------------------------------------------------------------------------------------------
-
-# Data vaccinatiegraad COMP OUD
-# vaccinations = pd.read_csv("data/backup/vaccinations.csv")
-# vacComp = vaccinations.copy()
-# vacComp = vacComp.loc[vacComp["location"].isin(["Netherlands", "United Kingdom", "United States"])][["location", "date","people_fully_vaccinated_per_hundred"]]
-# vacComp.dropna(inplace = True)
-
-# Data vaccination coverage for all three countries
-vacComp = preparation.vaccCov
-vacComp.dropna(inplace = True)
-
-
-# # Data attitudes COMP OUD
-# attitudes = pd.read_csv("data/backup/attitudes.csv")
-# attComp = attitudes.copy()
-# attComp.columns = ["country", "code", "date", "unwilling", "uncertain", "willing", "vaccinated"]
-# attComp = attComp.loc[attComp["country"].isin(["Netherlands", "United Kingdom", "United States"])]
-
-# Data vaccination attitudes for all three countries
-attComp = preparation.vaccAttitudes
-
-
-
 ## LAYOUT VAN PAGINA ------------------------------------------------------------------------------------------------
 
 layout = dbc.Container([
@@ -102,16 +78,16 @@ layout = dbc.Container([
     Input('selected-countries', 'value')
 )
 def update_graph(selected_countries):
-    figVacComp = px.line(  vacComp.loc[vacComp['country'].isin(selected_countries)],
-                    x="date",
-                    y="coverage_full_dose",
-                    color="country",
-                    title='<b>Vaccination level per Country:</b>',
-                    labels = {"coverage_full_dose" : "Vaccination Level (%)",
-                              "date" : "Date"},
-                    range_y = [0,100],
-                    template = "seaborn",
-                    color_discrete_map = {"Netherlands":"#b67a0c", "United Kingdom":"crimson", "United States":"steelblue"})
+    figVacComp = px.line(   preparation.vaccCov.loc[preparation.vaccCov['country'].isin(selected_countries)],
+                            x="date",
+                            y="coverage_full_dose",
+                            color="country",
+                            title='<b>Vaccination level per Country:</b>',
+                            labels = {"coverage_full_dose" : "Vaccination Level (%)",
+                                      "date" : "Date"},
+                            range_y = [0,100],
+                            template = "seaborn",
+                            color_discrete_map = {"Netherlands":"#b67a0c", "United Kingdom":"crimson", "United States":"steelblue"})
 
     figVacComp.update_traces(connectgaps=True)
     figVacComp.add_hline(y=90, line_width=2, line_dash="dash", opacity=0.2, annotation_text="<i>theoretical herd immunity</i>", annotation_position="top right")
@@ -125,14 +101,14 @@ def update_graph(selected_countries):
      Input('attitude-dropwdown', 'value')]
 )
 def update_graph(selected_countries, attitude_dropdown):
-    figAttComp = px.line(attComp.loc[attComp['country'].isin(selected_countries)],
-                    x="date",
-                    y= attitude_dropdown,
-                    color="country",
-                    labels = {"date" : "Date",
-                              "value" : "Share of Population (%)"},
-                    range_y = [0,100],
-                    template = "seaborn",
-                    color_discrete_map = {"unwilling_percentage":"black", "uncertain_percentage":"purple", "willing_percentage":"seagreen"})
+    figAttComp = px.line(   preparation.vaccAttitudes.loc[preparation.vaccAttitudes['country'].isin(selected_countries)],
+                            x="date",
+                            y= attitude_dropdown,
+                            color="country",
+                            labels = {"date" : "Date",
+                                      "value" : "Share of Population (%)"},
+                            range_y = [0,100],
+                            template = "seaborn",
+                            color_discrete_map = {"unwilling_percentage":"black", "uncertain_percentage":"purple", "willing_percentage":"seagreen"})
     figAttComp.update_traces(connectgaps=True)
     return figAttComp

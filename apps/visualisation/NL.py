@@ -12,54 +12,18 @@ import dash_bootstrap_components as dbc
 from apps.preparation import preparation
 
 
-## DATA OPHALEN ------------------------------------------------------------------------------------------------
-
-# Data vaccinatiegraad NL OUD
-# vaccinations = pd.read_csv("data/backup/vaccinations.csv")
-# vacNL = vaccinations.copy()
-# vacNL = vacNL[vacNL["location"] == "Netherlands"][["location", "date","people_fully_vaccinated_per_hundred"]]
-# vacNL.dropna(inplace = True)
-
-# Data vaccination coverage NL
-vacNL = preparation.vaccCov
-vacNL = vacNL[vacNL["country"] == "NL"][["country", "date","coverage_full_dose"]]
-vacNL.dropna(inplace = True)
-
-
-# # Data attitudes NL OUD
-# attitudes = pd.read_csv("data/backup/attitudes.csv")
-# attNL = attitudes.copy()
-# attNL = attNL[attNL["Entity"] == "Netherlands"]
-# attNL.columns = ["country", "code", "date", "unwilling", "uncertain", "willing", "vaccinated"]
-
-# Data vaccination attitudes UK
-attNL = preparation.vaccAttitudes
-attNL = attNL[attNL["country"] == "NL"]
-
-# Data age groups NL
-ageNL = preparation.vaccAge
-ageNL = ageNL[ageNL["country"] == "NL"]
-
-# Data gemeentes NL
-municNLGeo = gpd.read_file("data/geometry/municipalitiesNL.json")
-municNLGeo.to_crs(pyproj.CRS.from_epsg(4326), inplace=True)
-municNLData = pd.read_csv("data/backup/municNL.csv")
-municNLGeoData = municNLGeo.set_index('statnaam').join(municNLData.set_index('region'))
-
-
-
 
 ## FIGUREN MAKEN ------------------------------------------------------------------------------------------------
 
 # Figuur vaccinatiegraad NL
-figVacNL = px.line(  vacNL,
-                x="date",
-                y="coverage_full_dose",
-                title='<b>Vaccination level in The Netherlands:</b>',
-                labels = {"coverage_full_dose" : "Vaccination Level (%)",
-                          "date" : "Date"},
-                range_y = [0,100],
-                template = "seaborn")
+figVacNL = px.line( preparation.vaccCovNL,
+                    x="date",
+                    y="coverage_full_dose",
+                    title='<b>Vaccination level in The Netherlands:</b>',
+                    labels = {"coverage_full_dose" : "Vaccination Level (%)",
+                              "date" : "Date"},
+                    range_y = [0,100],
+                    template = "seaborn")
 
 figVacNL.update_traces(connectgaps=True)
 figVacNL.update_traces(line_color='#b67a0c')
@@ -71,16 +35,16 @@ def custom_legend_name(figure, new_names):
         figure.data[i].name = new_name
 
 
-figAttNL = px.line(  attNL,
-                x="date",
-                y=["unwilling_percentage", "uncertain_percentage", "willing_percentage"],
-                title='<b>Attitudes towards vaccination in The Netherlands:</b>',
-                labels = {"date" : "Date",
-                          "value" : "Share of Population (%)",
-                          "variable" : "Attitude category:"},
-                range_y = [0,100],
-                template = "seaborn",
-                color_discrete_map = {"unwilling_percentage":"black", "uncertain_percentage":"purple", "willing_percentage":"seagreen"})
+figAttNL = px.line( preparation.vaccAttitudesNL,
+                    x="date",
+                    y=["unwilling_percentage", "uncertain_percentage", "willing_percentage"],
+                    title='<b>Attitudes towards vaccination in The Netherlands:</b>',
+                    labels = {"date" : "Date",
+                              "value" : "Share of Population (%)",
+                              "variable" : "Attitude category:"},
+                    range_y = [0,100],
+                    template = "seaborn",
+                    color_discrete_map = {"unwilling_percentage":"black", "uncertain_percentage":"purple", "willing_percentage":"seagreen"})
 
 figAttNL.update_traces(connectgaps=True)
 custom_legend_name(figAttNL, ['unwilling to get vaccinated','uncertain about vaccination', "willing but not yet vaccinated"])
