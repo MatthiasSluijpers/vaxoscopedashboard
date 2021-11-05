@@ -96,7 +96,7 @@ figAttUSA.update_traces(connectgaps=True)
 custom_legend_name(figAttUSA, ['unwilling to get vaccinated','uncertain about vaccination', "willing but not yet vaccinated"])
 
 # Figuur leeftijdsgroepen USA
-figAgeUSA = px.bar(  ageUSA,
+figAgeUSA = px.bar(  preparation.vaccAgeUS,
                     x='age_group',
                     y='coverage_full_dose',
                     title='<b>Vaccination level per age group the United States:</b>',
@@ -167,9 +167,9 @@ layout = dbc.Container([
 def update_graph(US_location_dropwdown):
     figLocationUSA = {}
     if US_location_dropwdown == "counties":
-        figLocationUSA = px.choropleth( preparation.vaccLocUSCounty,
-                                    geojson=preparation.vaccLocUSCounty.geometry,
-                                    locations=preparation.vaccLocUSCounty.index,
+        figLocationUSA = px.choropleth( preparation.vaccLocMapCountyUS,
+                                    geojson=preparation.vaccLocMapCountyUS.geometry,
+                                    locations=preparation.vaccLocMapCountyUS.index,
                                     color="coverage_full_dose",
                                     labels = {"coverage_full_dose":"Vaccination Level (%)", "index":"County code"},
                                     color_continuous_scale = [[0,"red"], [0.6,"orange"], [1,"steelblue"]],
@@ -180,9 +180,9 @@ def update_graph(US_location_dropwdown):
         figLocationUSA.update_geos(projection_scale=1.5)
         figLocationUSA.update_geos(projection_type="orthographic")
     elif US_location_dropwdown == "states":
-        figLocationUSA = px.choropleth( preparation.vaccLocUSState,
-                                    geojson=preparation.vaccLocUSState.geometry,
-                                    locations=preparation.vaccLocUSState.index,
+        figLocationUSA = px.choropleth( preparation.vaccLocMapStateUS,
+                                    geojson=preparation.vaccLocMapStateUS.geometry,
+                                    locations=preparation.vaccLocMapStateUS.index,
                                     color="coverage_full_dose",
                                     labels = {"coverage_full_dose":"Vaccination Level (%)", "name":"State"},
                                     color_continuous_scale = [[0,"red"], [0.6,"orange"], [1,"steelblue"]],

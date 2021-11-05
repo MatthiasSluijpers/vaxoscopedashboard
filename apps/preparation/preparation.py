@@ -89,112 +89,108 @@ def prepareVaccAttitudesAll():
 def prepareVaccAgeNL():
 
     # Load data
-    nlAge = pd.read_csv('https://data.rivm.nl/data/covid-19/COVID-19_vaccinatiegraad_per_gemeente_per_week_leeftijd.csv', sep=';')
+    global vaccAgeNL
+    vaccAgeNL = pd.read_csv('https://data.rivm.nl/data/covid-19/COVID-19_vaccinatiegraad_per_gemeente_per_week_leeftijd.csv', sep=';')
 
     # Replace outliers with NaNs
-    nlAge['Vaccination_coverage_partly'] = nlAge['Vaccination_coverage_partly'].replace(">=95", np.nan)
-    nlAge['Vaccination_coverage_partly'] = nlAge['Vaccination_coverage_partly'].replace("9999", np.nan)
-    nlAge['Vaccination_coverage_completed'] = nlAge['Vaccination_coverage_completed'].replace(">=95", np.nan)
-    nlAge['Vaccination_coverage_completed'] = nlAge['Vaccination_coverage_completed'].replace("9999", np.nan)
+    vaccAgeNL['Vaccination_coverage_partly'] = vaccAgeNL['Vaccination_coverage_partly'].replace(">=95", np.nan)
+    vaccAgeNL['Vaccination_coverage_partly'] = vaccAgeNL['Vaccination_coverage_partly'].replace("9999", np.nan)
+    vaccAgeNL['Vaccination_coverage_completed'] = vaccAgeNL['Vaccination_coverage_completed'].replace(">=95", np.nan)
+    vaccAgeNL['Vaccination_coverage_completed'] = vaccAgeNL['Vaccination_coverage_completed'].replace("9999", np.nan)
 
     # Select subset of rows with 'Veiligheidsregio' as region level, because using both 'Veiligheidsregio' and 'Gemeente' would be double
     regionLevel = ['Veiligheidsregio']
-    nlAge = nlAge.loc[nlAge['Region_level'].isin(regionLevel)]
+    vaccAgeNL = vaccAgeNL.loc[vaccAgeNL['Region_level'].isin(regionLevel)]
 
     # Make the vaccination coverages floats
-    nlAge['Vaccination_coverage_partly'] = nlAge['Vaccination_coverage_partly'].astype('float')
-    nlAge['Vaccination_coverage_completed'] = nlAge['Vaccination_coverage_completed'].astype('float')
+    vaccAgeNL['Vaccination_coverage_partly'] = vaccAgeNL['Vaccination_coverage_partly'].astype('float')
+    vaccAgeNL['Vaccination_coverage_completed'] = vaccAgeNL['Vaccination_coverage_completed'].astype('float')
 
     # Group the age groups over all regions for the vaccination coverage
-    nlAge = nlAge.groupby(['Date_of_statistics', 'Age_group']).mean()
+    vaccAgeNL = vaccAgeNL.groupby(['Date_of_statistics', 'Age_group']).mean()
 
     # Make the indexes normal columns
-    nlAge.reset_index(level=0, inplace=True)
-    nlAge.reset_index(level=0, inplace=True)
+    vaccAgeNL.reset_index(level=0, inplace=True)
+    vaccAgeNL.reset_index(level=0, inplace=True)
 
     # Order relevant columns
-    nlAge = nlAge[['Date_of_statistics', 'Age_group', 'Vaccination_coverage_partly', 'Vaccination_coverage_completed']]
+    vaccAgeNL = vaccAgeNL[['Date_of_statistics', 'Age_group', 'Vaccination_coverage_partly', 'Vaccination_coverage_completed']]
 
     # Drop duplicates (check before and after)
-    nlAge = nlAge.drop_duplicates()
+    vaccAgeNL = vaccAgeNL.drop_duplicates()
 
     # Rename columns
-    nlAge = nlAge.rename(columns={'Date_of_statistics': 'date'})
-    nlAge = nlAge.rename(columns={'Age_group': 'age_group'})
-    nlAge = nlAge.rename(columns={'Vaccination_coverage_partly': 'coverage_one_dose'})
-    nlAge = nlAge.rename(columns={'Vaccination_coverage_completed': 'coverage_full_dose'})
+    vaccAgeNL = vaccAgeNL.rename(columns={'Date_of_statistics': 'date'})
+    vaccAgeNL = vaccAgeNL.rename(columns={'Age_group': 'age_group'})
+    vaccAgeNL = vaccAgeNL.rename(columns={'Vaccination_coverage_partly': 'coverage_one_dose'})
+    vaccAgeNL = vaccAgeNL.rename(columns={'Vaccination_coverage_completed': 'coverage_full_dose'})
 
     # Change data types
-    nlAge['date']= pd.to_datetime(nlAge['date'])
+    vaccAgeNL['date']= pd.to_datetime(vaccAgeNL['date'])
 
     # Add 'count_one_dose', 'count_full_dose', and 'country' column
-    nlAge.insert(2, 'count_one_dose', np.nan)
-    nlAge.insert(3, 'count_full_dose', np.nan)
-    nlAge['country'] = 'NL'
+    vaccAgeNL.insert(2, 'count_one_dose', np.nan)
+    vaccAgeNL.insert(3, 'count_full_dose', np.nan)
+    vaccAgeNL['country'] = 'NL'
 
     # Set column order
-    nlAge = nlAge[['date', 'country', 'age_group', 'count_one_dose', 'coverage_one_dose', 'count_full_dose', 'coverage_full_dose']]
-
-    # Make data available
-    global vaccAgeNL
-    vaccAgeNL = nlAge
+    vaccAgeNL = vaccAgeNL[['date', 'country', 'age_group', 'count_one_dose', 'coverage_one_dose', 'count_full_dose', 'coverage_full_dose']]
 
 
 # Vaccination coverage per age level for UK
 def prepareVaccAgeUK():
 
     # Load data
-    ukAge = pd.read_csv('https://api.coronavirus.data.gov.uk/v2/data?areaType=nation&areaCode=E92000001&metric=vaccinationsAgeDemographics&format=csv')
+    global vaccAgeUK
+    vaccAgeUK = pd.read_csv('https://api.coronavirus.data.gov.uk/v2/data?areaType=nation&areaCode=E92000001&metric=vaccinationsAgeDemographics&format=csv')
 
     # Select relevant columns
-    ukAge = ukAge[['date', 'age', 'cumPeopleVaccinatedFirstDoseByVaccinationDate', 'cumPeopleVaccinatedCompleteByVaccinationDate', 'cumVaccinationFirstDoseUptakeByVaccinationDatePercentage', 'cumVaccinationCompleteCoverageByVaccinationDatePercentage']]
+    vaccAgeUK = vaccAgeUK[['date', 'age', 'cumPeopleVaccinatedFirstDoseByVaccinationDate', 'cumPeopleVaccinatedCompleteByVaccinationDate', 'cumVaccinationFirstDoseUptakeByVaccinationDatePercentage', 'cumVaccinationCompleteCoverageByVaccinationDatePercentage']]
 
     # Drop duplicates (check before and after)
-    ukAge = ukAge.drop_duplicates()
+    vaccAgeUK = vaccAgeUK.drop_duplicates()
 
     # Rename columns
-    ukAge = ukAge.rename(columns={'age': 'age_group'})
-    ukAge = ukAge.rename(columns={'cumPeopleVaccinatedFirstDoseByVaccinationDate': 'count_one_dose'})
-    ukAge = ukAge.rename(columns={'cumVaccinationFirstDoseUptakeByVaccinationDatePercentage': 'coverage_one_dose'})
-    ukAge = ukAge.rename(columns={'cumPeopleVaccinatedCompleteByVaccinationDate': 'count_full_dose'})
-    ukAge = ukAge.rename(columns={'cumVaccinationCompleteCoverageByVaccinationDatePercentage': 'coverage_full_dose'})
+    vaccAgeUK = vaccAgeUK.rename(columns={'age': 'age_group'})
+    vaccAgeUK = vaccAgeUK.rename(columns={'cumPeopleVaccinatedFirstDoseByVaccinationDate': 'count_one_dose'})
+    vaccAgeUK = vaccAgeUK.rename(columns={'cumVaccinationFirstDoseUptakeByVaccinationDatePercentage': 'coverage_one_dose'})
+    vaccAgeUK = vaccAgeUK.rename(columns={'cumPeopleVaccinatedCompleteByVaccinationDate': 'count_full_dose'})
+    vaccAgeUK = vaccAgeUK.rename(columns={'cumVaccinationCompleteCoverageByVaccinationDatePercentage': 'coverage_full_dose'})
 
     # Change data types
-    ukAge['date']= pd.to_datetime(ukAge['date'])
+    vaccAgeUK['date']= pd.to_datetime(vaccAgeUK['date'])
 
     # Add 'country' column
-    ukAge['country'] = 'UK'
+    vaccAgeUK['country'] = 'UK'
 
     # Recode age labels
-    ukAge['age_group'] = ukAge['age_group'].replace({'12_15': '12-15', '16_17': '16-17', '18_24': '18-24', '25_29': '25-29',
+    vaccAgeUK['age_group'] = vaccAgeUK['age_group'].replace({'12_15': '12-15', '16_17': '16-17', '18_24': '18-24', '25_29': '25-29',
                                                       '30_34': '30-34', '35_39': '35-39', '40_44': '40-44', '45_49': '45-49',
                                                        '50_54': '50-54', '55_59': '55-59', '60_64': '60-64', '65_69': '65-69',
                                                       '70_74': '70-74', '75_79': '75-79', '80_84': '80-84', '90+': '90+'})
 
     # Filter by latest date
-    ukAge = ukAge[ukAge["date"]==ukAge["date"].max()]
+    vaccAgeUK = vaccAgeUK[vaccAgeUK["date"]==vaccAgeUK["date"].max()]
 
     # Set column order
-    ukAge = ukAge[['date', 'country', 'age_group', 'count_one_dose', 'coverage_one_dose', 'count_full_dose', 'coverage_full_dose']]
+    vaccAgeUK = vaccAgeUK[['date', 'country', 'age_group', 'count_one_dose', 'coverage_one_dose', 'count_full_dose', 'coverage_full_dose']]
 
-    # Make data available
-    global vaccAgeUK
-    vaccAgeUK = ukAge
 
 # Vaccination coverage per age level for US
 def prepareVaccAgeUS():
 
     # Load data
-    usa = pd.read_csv("https://data.cdc.gov/resource/km4m-vcsb.csv")
+    global vaccAgeUS
+    vaccAgeUS = pd.read_csv("https://data.cdc.gov/resource/km4m-vcsb.csv")
 
     age_groups = ['Ages_<12yrs','Ages_12-15_yrs','Ages_16-17_yrs','Ages_18-24_yrs','Ages_18-29_yrs',
     'Ages_25-39_yrs','Ages_30-39_yrs','Ages_40-49_yrs','Ages_50-64_yrs','Ages_65-74_yrs','Ages_75+_yrs',
     'Ages_<18yrs','Age_unknown','Age_known']
 
-    usaAge = usa.loc[usa['demographic_category'].isin(age_groups)]
+    vaccAgeUS = vaccAgeUS.loc[vaccAgeUS['demographic_category'].isin(age_groups)]
 
     # Select relevant columns
-    usaAge = usaAge[['date',
+    vaccAgeUS = vaccAgeUS[['date',
      'demographic_category',
      'administered_dose1',
      'administered_dose1_pct',
@@ -202,42 +198,39 @@ def prepareVaccAgeUS():
      'series_complete_pop_pct']]
 
     # Rename columns
-    usaAge = usaAge.rename(columns={'demographic_category': 'age_group'})
-    usaAge = usaAge.rename(columns={'recip_state': 'state'})
-    usaAge = usaAge.rename(columns={'administered_dose1': 'count_one_dose'})
-    usaAge = usaAge.rename(columns={'administered_dose1_pct': 'coverage_one_dose'})
-    usaAge = usaAge.rename(columns={'series_complete_yes': 'count_full_dose'})
-    usaAge = usaAge.rename(columns={'series_complete_pop_pct': 'coverage_full_dose'})
+    vaccAgeUS = vaccAgeUS.rename(columns={'demographic_category': 'age_group'})
+    vaccAgeUS = vaccAgeUS.rename(columns={'recip_state': 'state'})
+    vaccAgeUS = vaccAgeUS.rename(columns={'administered_dose1': 'count_one_dose'})
+    vaccAgeUS = vaccAgeUS.rename(columns={'administered_dose1_pct': 'coverage_one_dose'})
+    vaccAgeUS = vaccAgeUS.rename(columns={'series_complete_yes': 'count_full_dose'})
+    vaccAgeUS = vaccAgeUS.rename(columns={'series_complete_pop_pct': 'coverage_full_dose'})
 
     # Change data types
-    usaAge = usaAge.astype({'date': 'datetime64[ns]'})
+    vaccAgeUS = vaccAgeUS.astype({'date': 'datetime64[ns]'})
 
     # Drop duplicates (check before and after)
-    usaAge = usaAge.drop_duplicates()
+    vaccAgeUS = vaccAgeUS.drop_duplicates()
 
     # Add 'country' column
-    usaAge['country'] = 'US'
+    vaccAgeUS['country'] = 'US'
 
-    usaAge['age_group'] = usaAge['age_group'].replace({'Ages_18-24_yrs': '18-24', 'Ages_50-64_yrs': '50-64', 'Ages_75+_yrs': '75+', 'Ages_65-74_yrs': '65-74',
+    vaccAgeUS['age_group'] = vaccAgeUS['age_group'].replace({'Ages_18-24_yrs': '18-24', 'Ages_50-64_yrs': '50-64', 'Ages_75+_yrs': '75+', 'Ages_65-74_yrs': '65-74',
                                                       'Ages_25-39_yrs': '25-39', 'Ages_50-65_yrs': '50-65', 'Ages_16-17_yrs': '16-17', 'Ages_<12yrs': '12-',
                                                        'Ages_40-49_yrs': '40-49', 'Ages_<18yrs': '18-', 'Ages_12-15_yrs': '12-15', 'Ages_30-39_yrs': '30-39',
                                                       'Ages_18-29_yrs': '18-29', 'Age_unknown': 'Age unknown', 'Age_known': 'Age known'})
 
     # Filter by latest date
-    usaAge = usaAge[usaAge["date"]==usaAge["date"].max()]
+    vaccAgeUS = vaccAgeUS[vaccAgeUS["date"]==vaccAgeUS["date"].max()]
 
     # Drop age known, age unkown and 18 minus columns
-    usaAge = usaAge[~usaAge["age_group"].isin(["Age known", "Age unknown", "18-"])]
+    vaccAgeUS = vaccAgeUS[~vaccAgeUS["age_group"].isin(["Age known", "Age unknown", "18-"])]
 
     # Sort by age group
-    usaAge = usaAge.sort_values(by="age_group")
+    vaccAgeUS = vaccAgeUS.sort_values(by="age_group")
 
     # Set column order
-    usaAge = usaAge[['date', 'country', 'age_group', 'count_one_dose', 'coverage_one_dose', 'count_full_dose', 'coverage_full_dose']]
+    vaccAgeUS = vaccAgeUS[['date', 'country', 'age_group', 'count_one_dose', 'coverage_one_dose', 'count_full_dose', 'coverage_full_dose']]
 
-    # Make data available
-    global vaccAgeUS
-    vaccAgeUS = usaAge
 
 # Vaccination coverage per age level for all countries
 def prepareVaccAgeAll():
@@ -309,9 +302,10 @@ def prepareVaccLocNL():
     vaccLocNL = vaccLocNL.drop(labels = "age_group", axis=1)
 
     # Match and merge data with country geography to draw map
+    global vaccLocMapNL
     geoNL = gpd.read_file("data/geometry/municipalitiesNL.json")
     geoNL.to_crs(pyproj.CRS.from_epsg(4326), inplace=True)
-    vaccLocNL = geoNL.set_index('statnaam').join(vaccLocNL.set_index('location_name'))
+    vaccLocMapNL = geoNL.set_index('statnaam').join(vaccLocNL.set_index('location_name'))
 
 # Vaccination coverage per lower tier local authority location in UK
 def prepareVaccLocUK():
@@ -342,8 +336,9 @@ def prepareVaccLocUK():
     vaccLocUK = vaccLocUK[vaccLocUK["date"]==vaccLocUK["date"].max()]
 
     # Match and merge data with country geography to draw map
+    global vaccLocMapUK
     geoUK = gpd.read_file("data/geometry/ltlaUK.json")
-    vaccLocUK = geoUK.set_index('AREANM').join(vaccLocUK.set_index('location_name'))
+    vaccLocMapUK = geoUK.set_index('AREANM').join(vaccLocUK.set_index('location_name'))
 
 # Vaccination coverage per county and state location in US
 def prepareVaccLocUS():
@@ -379,10 +374,11 @@ def prepareVaccLocUS():
     vaccLocUSCounty = vaccLocUSCounty[vaccLocUSCounty["date"]==vaccLocUSCounty["date"].max()]
 
     # Match and merge data with country geography to draw map
+    global vaccLocMapCountyUS
     geoUSCounties = gpd.read_file("data/geometry/countiesUS.json")
     geoUSCounties.to_crs(pyproj.CRS.from_epsg(4326), inplace=True)
     vaccLocUSCounty["location_code"] = vaccLocUSCounty["location_code"].astype("string")
-    vaccLocUSCounty = geoUSCounties.set_index('id').join(vaccLocUSCounty.set_index('location_code'))
+    vaccLocMapCountyUS = geoUSCounties.set_index('id').join(vaccLocUSCounty.set_index('location_code'))
 
     # (2/2) Location on state level:
 
@@ -463,15 +459,17 @@ def prepareVaccLocUS():
                   "WY" : "Wyoming"
                  }
 
-    vaccLocUSState['location_name'] = vaccLocUSState['location_name'].map(stateNames).fillna(vaccLocUSState['location_name'])
+    vaccLocUSState['location_name'] = vaccLocUSState['location_name'].map(stateNames)
+    vaccLocUSState.dropna(subset=['location_name'], inplace = True)
 
     # Filter by latest date
     vaccLocUSState = vaccLocUSState[vaccLocUSState["date"]==vaccLocUSState["date"].max()]
 
     # Match and merge data with country geography to draw map
+    global vaccLocMapStateUS
     geoUSStates = gpd.read_file("data/geometry/statesUS.json")
     geoUSStates.to_crs(pyproj.CRS.from_epsg(4326), inplace=True)
-    vaccLocUSState = geoUSStates.set_index('name').join(vaccLocUSState.set_index('location_name'))
+    vaccLocMapStateUS = geoUSStates.set_index('name').join(vaccLocUSState.set_index('location_name'))
 
 
 # Vaccination coverage per location for all three countries
@@ -533,6 +531,16 @@ def prepareVaccIncomeAll():
     prepareVaccIncomeUK()
     prepareVaccIncomeNL()
     prepareVaccIncomeUS()
+
+# Function to retrieve updated data from data sources
+def refreshData():
+
+    prepareVaccIncomeAll()
+    prepareVaccLocAll()
+    prepareVaccAgeAll()
+    prepareVaccAttitudesAll()
+    prepareVaccCovAll()
+
 
 prepareVaccIncomeAll()
 prepareVaccLocAll()

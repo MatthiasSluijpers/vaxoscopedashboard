@@ -86,7 +86,7 @@ figAttNL.update_traces(connectgaps=True)
 custom_legend_name(figAttNL, ['unwilling to get vaccinated','uncertain about vaccination', "willing but not yet vaccinated"])
 
 # Figuur leeftijdsgroepen NL
-figAgeNL = px.bar(  ageNL,
+figAgeNL = px.bar(  preparation.vaccAgeNL,
                     x='age_group',
                     y='coverage_full_dose',
                     title='<b>Vaccination level per age group The Netherlands:</b>',
@@ -99,9 +99,9 @@ figAgeNL.update_traces(marker_color='#b67a0c')
 
 
 # Figuur gemeentes NL
-figMunicNL = px.choropleth( preparation.vaccLocNL,
-                            geojson=preparation.vaccLocNL.geometry,
-                            locations=preparation.vaccLocNL.index,
+figMunicNL = px.choropleth( preparation.vaccLocMapNL,
+                            geojson=preparation.vaccLocMapNL.geometry,
+                            locations=preparation.vaccLocMapNL.index,
                             color="coverage_full_dose",
                             title="<b>Vaccination level per Dutch municipality:</b>",
                             labels = {"coverage_full_dose":"Vaccination Level (%)", "statnaam":"Municipality"},

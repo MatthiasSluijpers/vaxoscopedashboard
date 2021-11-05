@@ -99,7 +99,7 @@ figIncomeUK = px.bar(  preparation.vaccIncomeUK,
 figIncomeUK.update_traces(marker_color='crimson')
 
 # Figure age groups UK
-figAgeUK = px.bar(  ageUK,
+figAgeUK = px.bar(  preparation.vaccAgeUK,
                     x='age_group',
                     y='coverage_full_dose',
                     title='<b>Vaccination level per age group in the United Kingdom:</b>',
@@ -111,9 +111,9 @@ figAgeUK = px.bar(  ageUK,
 figAgeUK.update_traces(marker_color='crimson')
 
 # Figuur lower tier local authorities UK
-figLtlaUK = px.choropleth( preparation.vaccLocUK,
-                            geojson=preparation.vaccLocUK.geometry,
-                            locations=preparation.vaccLocUK.index,
+figLtlaUK = px.choropleth( preparation.vaccLocMapUK,
+                            geojson=preparation.vaccLocMapUK.geometry,
+                            locations=preparation.vaccLocMapUK.index,
                             color="coverage_full_dose",
                             title="<b>Vaccination level per UK Lower Tier Local Authority:</b>",
                             labels = {"coverage_full_dose":"Vaccination Level (%)", "AREANM":"Lower Tier Local Authority"},

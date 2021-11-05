@@ -11,6 +11,7 @@ from app import server
 # Connect to seperate app screens
 from apps.visualisation import NL, UK, USA, comparison
 from apps.preparation import preparation
+from apps.modelling import modelling
 
 # DEFINE GLOBAL APP LAYOUT -----------------------------------------------------------------------
 
@@ -31,76 +32,6 @@ content = html.Div(id="page-content")
 
 app.layout = dbc.Container([dcc.Location(id="url"), navbar, content], fluid=True)
 
-# GENERATE REPORT STATS --------------------------------------------------------------------------------
-
-def municRecNL():
-    m = NL.municNLData
-    m = m.sort_values(by='vaccinated').iloc[0:10,0].to_string(index=False)
-    m = re.sub('\s+',' ',m).strip().replace(" ", ", ")
-    return m
-
-def ageRecNL():
-    a = NL.ageNL
-    a = a[a["coverage_full_dose"] == a["coverage_full_dose"].min()]["age_group"]
-    a = a.to_string(index=False)
-    return a
-
-def ltlaRecUK():
-    l = UK.ltlaUKData
-    l = l.sort_values(by='vaccinated').iloc[0:10,1].to_string(index=False)
-    l = l.replace('\n', ",")
-    l = re.sub('\s+',' ',l).strip()
-    return l
-
-def incomeRecUK():
-    i = UK.incomeUK
-    i = i[i["coverage_one_dose"] == i["coverage_one_dose"].min()]["income_group"]
-    i = i.to_string(index=False)
-    return i
-
-def stateRecUSA():
-    c = USA.statesUSAData
-    c = c.sort_values(by='vaccinated').iloc[0:10,0].to_string(index=False)
-    c = c.replace("\n", ", ")
-    c = re.sub('\s+',' ',c).strip()
-    return c
-
-def ageRecUSA():
-    a = USA.ageUSA
-    a = a[a["coverage_full_dose"] == a["coverage_full_dose"].min()]["age_group"]
-    a = a.to_string(index=False)
-    return a
-
-def incomeRecUSA():
-    i = USA.incomeUSA
-    # Line below excludes "no income reported" class as this is no clear target group
-    # LET OP: VERANDER LINE ONDER als deze klasse bij uiteindelijke dataset andere naam heeft
-    i = i[i["income_group"] != "No Income Reported"]
-    i = i[i["coverage_full_dose"] == i["coverage_full_dose"].min()]["income_group"]
-    i = i.to_string(index=False)
-    return i
-
-def highestVacComp():
-    v = comparison.vacComp
-    v = v.loc[v["country"].isin(["NL", "UK", "US"])]
-    v = v[v["coverage_full_dose"]==v["coverage_full_dose"].max()]["country"]
-    v = v.to_string(index=False)
-    v = v.replace("NL","The Netherlands")
-    v = v.replace("UK","United Kingdom")
-    v = v.replace("US","United States")
-    return v
-
-def highestUnwilComp():
-    a = comparison.attComp
-    a = a[a["unwilling_percentage"]==a["unwilling_percentage"].max()]["country"]
-    a = a.to_string(index=False)
-    a = a.replace("NL","The Netherlands")
-    a = a.replace("UK","United Kingdom")
-    a = a.replace("US","United States")
-    return a
-
-
-
 # DEFINE HOMESCREEN LAYOUT -----------------------------------------------------------------------
 
 home_layout = dbc.Container([
@@ -118,9 +49,9 @@ dbc.Row([
         html.Div([
             html.Div([html.P("Dutch target group estimation:")],
                     className = "target-report-title target-report-title-NL"),
-            html.Div([html.P("Municipalities: " + municRecNL() + " (top-ten targets).")],
+            html.Div([html.P("Municipalities: " + modelling.locTargetRecNL() + " (top-ten targets).")],
                     className = "target-report-text"),
-            html.Div([html.P("Age group: " + ageRecNL() + " (top target).")],
+            html.Div([html.P("Age group: " + modelling.ageTargetRecNL() + " (top target).")],
                     className = "target-report-text"),
         ],className='target-report-card target-report-card-NL'),
     ],width = {"size":4, "offset":0}, className="target-report-col"),
@@ -129,9 +60,11 @@ dbc.Row([
             html.Div([
                 html.Div([html.P("British target group estimation:")],
                         className = "target-report-title target-report-title-UK"),
-                html.Div([html.P("Municipalities: " + ltlaRecUK() + " (top-ten targets).")],
+                html.Div([html.P("Local authorities: " + modelling.locTargetRecUK() + " (top-ten targets).")],
                         className = "target-report-text"),
-                html.Div([html.P("Deprivation group: " + incomeRecUK() + " (top target).")],
+                html.Div([html.P("Age group: " + modelling.ageTargetRecUK() + " (top target).")],
+                        className = "target-report-text"),
+                html.Div([html.P("Deprivation group: " + modelling.incomeTargetRecUK() + " (top target).")],
                         className = "target-report-text"),
             ],className='target-report-card target-report-card-UK'),
         ],width = {"size":4, "offset":0}, className="target-report-col"),
@@ -144,11 +77,11 @@ dbc.Row([
             html.Div([
                 html.Div([html.P("American target group estimation:")],
                         className = "target-report-title target-report-title-USA"),
-                html.Div([html.P("States: " + stateRecUSA() + " (top-ten targets).")],
+                html.Div([html.P("States: " + modelling.locTargetRecUS() + " (top-ten targets).")],
                         className = "target-report-text"),
-                html.Div([html.P("Age group: " + ageRecUSA() + " (top target).")],
+                html.Div([html.P("Age group: " + modelling.ageTargetRecUS() + " (top target).")],
                         className = "target-report-text"),
-                html.Div([html.P("Income group: " + incomeRecUSA() + " (top target).")],
+                html.Div([html.P("Income group: " + modelling.incomeTargetRecUS() + " (top target).")],
                         className = "target-report-text"),
             ],className='target-report-card target-report-card-USA'),
         ],width = {"size":4, "offset":0}, className="target-report-col"),
@@ -157,9 +90,9 @@ dbc.Row([
             html.Div([
                 html.Div([html.P("Country vaccination success:")],
                         className = "target-report-title target-report-title-comp"),
-                html.Div([html.P("Country with the highest vaccination degree: " + highestVacComp() + " (of the three included in dashboard).")],
+                html.Div([html.P("Country with the highest vaccination degree: " + modelling.highestCovComp() + " (of the three included in dashboard).")],
                         className = "target-report-text"),
-                html.Div([html.P("Country with most citizens unwilling to take vaccine: " + highestUnwilComp() + " (of the three included in dashboard).")],
+                html.Div([html.P("Country with most citizens unwilling to take vaccine: " + modelling.highestUnwilComp() + " (of the three included in dashboard).")],
                         className = "target-report-text"),
             ],className='target-report-card target-report-card-comp'),
         ],width = {"size":4, "offset":0}, className="target-report-col"),
@@ -194,7 +127,7 @@ def render_page_content(pathname):
     if pathname == '/Comparison':
         return comparison.layout
     else:
-        return "This page is not implemented yet."
+        return "This page does not exist."
 
 
 # RUN APP ON SERVER -----------------------------------------------------------------------------
