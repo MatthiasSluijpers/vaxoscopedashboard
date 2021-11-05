@@ -117,15 +117,23 @@ dbc.Row([
               [Input('url', 'pathname')])
 def render_page_content(pathname):
     if pathname == '/':
+        preparation.checkForRefresh()
         return home_layout
     if pathname == '/NL':
+        preparation.checkForRefresh()
         return NL.layout
     if pathname == '/UK':
+        preparation.checkForRefresh()
         return UK.layout
     if pathname == '/USA':
+        preparation.checkForRefresh()
         return USA.layout
     if pathname == '/Comparison':
+        preparation.checkForRefresh()
         return comparison.layout
+    if pathname == '/Refresh':
+        preparation.refreshData()
+        return "The data was successfully refreshed."
     else:
         return "This page does not exist."
 

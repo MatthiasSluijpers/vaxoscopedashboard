@@ -9,6 +9,7 @@ import pandas as pd
 import geopandas as gpd
 import numpy as np
 import pyproj
+import datetime
 
 ## RETRIEVE AND PREPARE DATA ---------------------------------------------------
 
@@ -626,8 +627,13 @@ def prepareVaccIncomeAll():
     prepareVaccIncomeNL()
     prepareVaccIncomeUS()
 
+
+## DATA REFRESH MECHANISM ------------------------------------------------------
+
 # Function to retrieve updated data from data sources
 def refreshData():
+
+    print("Refreshing data, note that this might take 0,5 to 3 minutes...")
 
     prepareVaccIncomeAll()
     prepareVaccLocAll()
@@ -635,6 +641,31 @@ def refreshData():
     prepareVaccAttitudesAll()
     prepareVaccCovAll()
 
+    print("Succefully refreshed data.")
+
+def checkForRefresh():
+
+    # Calculate minutes since last refresh
+    global lastRefreshTime
+    currentTime = datetime.datetime.now()
+    timeElapsed = currentTime - lastRefreshTime
+    minutesElapsed = timeElapsed.total_seconds() / 60
+
+    # Refresh data if more than an hour has passed
+    if(minutesElapsed > 60):
+        refreshData()
+        lastRefreshTime = datetime.datetime.now()
+
+def recordLaunchTime():
+
+    # Record timestamp when launching dashboard
+    global lastRefreshTime
+    lastRefreshTime = datetime.datetime.now()
+
+
+## RUN FUNCTIONS DURING LAUNCH -------------------------------------------------
+
+recordLaunchTime()
 prepareVaccIncomeAll()
 prepareVaccLocAll()
 prepareVaccAgeAll()
