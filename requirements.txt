@@ -3,3 +3,5 @@ numpy
 pandas
 geopandas
 dash_bootstrap_components
+statsmodels
+pmdarima
