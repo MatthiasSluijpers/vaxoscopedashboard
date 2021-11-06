@@ -87,7 +87,7 @@ figIncomeUSA = px.bar(  preparation.vaccIncomeUS,
                         y='coverage_full_dose',
                         title='<b>Vaccination level per income group the United States:</b>',
                         labels= {"income_group" : "Income Group",
-                                 "coverage_full_dose" : "Vaccination Level (%)"},
+                                 "coverage_full_dose" : "Vaccination Level (%), adults"},
                         range_y = [40,100],
                         template = "seaborn")
 
