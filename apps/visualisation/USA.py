@@ -14,9 +14,9 @@ from apps.modelling import modelling
 
 
 
-## FIGUREN MAKEN ------------------------------------------------------------------------------------------------
+## CREATE VISUALISATIONS FOR US ------------------------------------------------
 
-# Figuur vaccinatiegraad USA
+# Line graph for vaccination coverage in US
 figVacUSA = px.line(preparation.vaccCovUS,
                     x="date",
                     y="coverage_full_dose",
@@ -26,6 +26,7 @@ figVacUSA = px.line(preparation.vaccCovUS,
                     range_y = [0,100],
                     template = "seaborn")
 
+# Line graph for predicted vaccination coverage in US
 figVacPredUSA = px.line(     modelling.vaccCovPredUS,
                             x="date",
                             y="predicted",
@@ -39,6 +40,7 @@ figVacConfUpUSA = px.line(   modelling.vaccCovPredUS,
                             y="upper_confint",
                             labels = {"upper_confint" : "Upper limit of confidence interval"})
 
+# Combine line graphs from above and adjust appearance
 figVacUSA.update_traces(connectgaps=True)
 figVacUSA.update_traces(line_color="steelblue")
 figVacPredUSA.update_traces(line_color="seagreen")
@@ -49,12 +51,21 @@ figVacUSA.add_trace(figVacPredUSA.data[0])
 figVacUSA.add_trace(figVacConfLowUSA.data[0])
 figVacUSA.add_trace(figVacConfUpUSA.data[0])
 
-# Figuur attitudes USA
+# Define function to recode category labels
 def custom_legend_name(figure, new_names):
+    """ Recode labels for variable categories in plotly express graph
+
+        Parameters:
+        figure (plotly express graph): graph containing category labels to recode
+        new_names (list): list with new category names as strings
+
+        Returns:
+        Nothing, instead directly adjusts the ploty express graph
+    """
     for i, new_name in enumerate(new_names):
         figure.data[i].name = new_name
 
-
+# Line graph for attitudes towards vaccination in US
 figAttUSA = px.line(preparation.vaccAttitudesUS,
                     x="date",
                     y=["unwilling_percentage", "uncertain_percentage", "willing_percentage"],
@@ -69,7 +80,7 @@ figAttUSA = px.line(preparation.vaccAttitudesUS,
 figAttUSA.update_traces(connectgaps=True)
 custom_legend_name(figAttUSA, ['unwilling to get vaccinated','uncertain about vaccination', "willing but not yet vaccinated"])
 
-# Figuur leeftijdsgroepen USA
+# Bar chart for vaccination coverage per age in US
 figAgeUSA = px.bar( preparation.vaccAgeUS,
                     x='age_group',
                     y='coverage_full_dose',
@@ -81,7 +92,7 @@ figAgeUSA = px.bar( preparation.vaccAgeUS,
 
 figAgeUSA.update_traces(marker_color='steelblue')
 
-# Figuur inkomensgroepen USA
+# Bar chart for vaccination level per income group in US
 figIncomeUSA = px.bar(  preparation.vaccIncomeUS,
                         x='income_group',
                         y='coverage_full_dose',
@@ -94,8 +105,10 @@ figIncomeUSA = px.bar(  preparation.vaccIncomeUS,
 figIncomeUSA.update_traces(marker_color='steelblue')
 
 
-## LAYOUT VAN PAGINA ------------------------------------------------------------------------------------------------
+## DEFINE LAYOUT OF US PAGE ----------------------------------------------------
 
+# Create a grid with the US visualisations as defined above and below
+# Also contains dropdown menu to choose between state of country level choropleth
 layout = dbc.Container([
 
     dbc.Row([
@@ -130,16 +143,18 @@ layout = dbc.Container([
 
 ], fluid = True)
 
-## INTERACTIEVE FIGUREN MAKEN ------------------------------------------------------------------------------------------------
+## UPDATE US VISUALISATIONS ----------------------------------------------------
 
-# Figuur states en counties US
 
+# Return correct user requested choropleth of US
 @app.callback(
     Output('counties_USA', 'figure'),
     Input('US-location-dropwdown', 'value')
 )
 def update_graph(US_location_dropwdown):
     figLocationUSA = {}
+
+    # If user selected counties, then create and return county level US choropleth
     if US_location_dropwdown == "counties":
         figLocationUSA = px.choropleth( preparation.vaccLocMapCountyUS,
                                     geojson=preparation.vaccLocMapCountyUS.geometry,
@@ -153,6 +168,8 @@ def update_graph(US_location_dropwdown):
         figLocationUSA.update_geos(projection_rotation_lat=40)
         figLocationUSA.update_geos(projection_scale=1.5)
         figLocationUSA.update_geos(projection_type="orthographic")
+
+    # If user selected states, then create and return state level US choropleth
     elif US_location_dropwdown == "states":
         figLocationUSA = px.choropleth( preparation.vaccLocMapStateUS,
                                     geojson=preparation.vaccLocMapStateUS.geometry,
@@ -165,4 +182,5 @@ def update_graph(US_location_dropwdown):
         figLocationUSA.update_geos(projection_rotation_lon=-100)
         figLocationUSA.update_geos(projection_rotation_lat=40)
         figLocationUSA.update_geos(projection_type="orthographic")
+
     return figLocationUSA

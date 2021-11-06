@@ -14,9 +14,9 @@ from apps.modelling import modelling
 
 
 
-## FIGUREN MAKEN ------------------------------------------------------------------------------------------------
+## CREATE VISUALISATIONS FOR UK ------------------------------------------------
 
-# Figuur vaccinatiegraad UK
+# Line graph for vaccination coverage in UK
 figVacUK = px.line( preparation.vaccCovUK,
                     x="date",
                     y="coverage_full_dose",
@@ -26,6 +26,7 @@ figVacUK = px.line( preparation.vaccCovUK,
                     range_y = [0,100],
                     template = "seaborn")
 
+# Line graph for predicted vaccination coverage in UK
 figVacPredUK = px.line(     modelling.vaccCovPredUK,
                             x="date",
                             y="predicted",
@@ -39,6 +40,7 @@ figVacConfUpUK = px.line(   modelling.vaccCovPredUK,
                             y="upper_confint",
                             labels = {"upper_confint" : "Upper limit of confidence interval"})
 
+# Combine line graphs from above and adjust appearance
 figVacUK.update_traces(connectgaps=True)
 figVacUK.update_traces(line_color="crimson")
 figVacPredUK.update_traces(line_color="seagreen")
@@ -49,12 +51,21 @@ figVacUK.add_trace(figVacPredUK.data[0])
 figVacUK.add_trace(figVacConfLowUK.data[0])
 figVacUK.add_trace(figVacConfUpUK.data[0])
 
-# Figuur attitudes UK
+# Define function to recode category labels
 def custom_legend_name(figure, new_names):
+    """ Recode labels for variable categories in plotly express graph
+
+        Parameters:
+        figure (plotly express graph): graph containing category labels to recode
+        new_names (list): list with new category names as strings
+
+        Returns:
+        Nothing, instead directly adjusts the ploty express graph
+    """
     for i, new_name in enumerate(new_names):
         figure.data[i].name = new_name
 
-
+# Line graph for attitudes towards vaccination in UK
 figAttUK = px.line( preparation.vaccAttitudesUK,
                     x="date",
                     y=["unwilling_percentage", "uncertain_percentage", "willing_percentage"],
@@ -69,7 +80,7 @@ figAttUK = px.line( preparation.vaccAttitudesUK,
 figAttUK.update_traces(connectgaps=True)
 custom_legend_name(figAttUK, ['unwilling to get vaccinated','uncertain about vaccination', "willing but not yet vaccinated"])
 
-# Figuur inkomensgroepen UK
+# Bar chart for vaccination level per income group in UK
 figIncomeUK = px.bar(   preparation.vaccIncomeUK,
                         x='income_group',
                         y='coverage_one_dose',
@@ -81,7 +92,7 @@ figIncomeUK = px.bar(   preparation.vaccIncomeUK,
 
 figIncomeUK.update_traces(marker_color='crimson')
 
-# Figure age groups UK
+# Bar chart for vaccination coverage per age in UK
 figAgeUK = px.bar(  preparation.vaccAgeUK,
                     x='age_group',
                     y='coverage_full_dose',
@@ -93,7 +104,7 @@ figAgeUK = px.bar(  preparation.vaccAgeUK,
 
 figAgeUK.update_traces(marker_color='crimson')
 
-# Figuur lower tier local authorities UK
+# Choropleth for vaccination coverage per UK lower tier local authority
 figLtlaUK = px.choropleth( preparation.vaccLocMapUK,
                             geojson=preparation.vaccLocMapUK.geometry,
                             locations=preparation.vaccLocMapUK.index,
@@ -107,8 +118,9 @@ figLtlaUK.update_geos(projection_type="orthographic")
 
 
 
-## LAYOUT VAN PAGINA ------------------------------------------------------------------------------------------------
+## DEFINE LAYOUT OF UK PAGE ----------------------------------------------------
 
+# Create a grid with the UK visualisations as defined above
 layout = dbc.Container([
 
     dbc.Row([

@@ -8,13 +8,14 @@ import re
 from app import app
 from app import server
 
-# Connect to seperate app screens
+# Connect to preparation, modelling and visualisation code
 from apps.visualisation import NL, UK, USA, comparison
 from apps.preparation import preparation
 from apps.modelling import modelling
 
-# DEFINE GLOBAL APP LAYOUT -----------------------------------------------------------------------
+# DEFINE APP NAVIGATION --------------------------------------------------------
 
+# Create navigation bar
 navbar = dbc.Nav(
     children=[
         dbc.NavItem(dbc.NavLink("VaxoScope:", href="/", active=False)),
@@ -28,12 +29,15 @@ navbar = dbc.Nav(
 
 )
 
+# Create placeholder for page content such as homescreen or country visualisations
 content = html.Div(id="page-content")
 
+# Define overall layout of app consisting of navigation bar and page content
 app.layout = dbc.Container([dcc.Location(id="url"), navbar, content], fluid=True)
 
-# DEFINE HOMESCREEN LAYOUT -----------------------------------------------------------------------
+# DEFINE HOMESCREEN LAYOUT -----------------------------------------------------
 
+# Create homescreen layout consisting of welcome-message and target group reports
 home_layout = dbc.Container([
 
 dbc.Row([
@@ -110,9 +114,9 @@ dbc.Row([
 
 ])
 
-# UPDATE APP LAYOUT -----------------------------------------------------------------------------
+# UPDATE APP LAYOUT ------------------------------------------------------------
 
-
+# Show correct page when user navigates to a certain location in dashboard
 @app.callback(Output('page-content', 'children'),
               [Input('url', 'pathname')])
 def render_page_content(pathname):
@@ -149,7 +153,8 @@ def render_page_content(pathname):
         return "This page does not exist."
 
 
-# RUN APP ON SERVER -----------------------------------------------------------------------------
+# RUN APP ON SERVER ------------------------------------------------------------
 
+# Run the dashboard as a website on localhost:5000
 if __name__ == '__main__':
     app.run_server(debug=False, host='0.0.0.0', port=5000)

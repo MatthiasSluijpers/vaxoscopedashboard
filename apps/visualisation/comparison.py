@@ -13,10 +13,12 @@ from apps.preparation import preparation
 
 
 
-## LAYOUT VAN PAGINA ------------------------------------------------------------------------------------------------
+## DEFINE LAYOUT OF COMPARISON PAGE --------------------------------------------
 
+# Create a grid with the comparison visualisations as defined below
+# Also contains checkboxes to select countries to compare
+# Also contains dropdown menu to choose between vaccination attitude
 layout = dbc.Container([
-
 
     dbc.Row([
 
@@ -40,9 +42,6 @@ layout = dbc.Container([
             dcc.Graph(id='vaccinations_Comp', figure={})
         ], width = {"size":8, "offset":2}),
 
-        dbc.Col([
-            #dcc.Graph(id='graph_name', figure={})
-        ], width = {"size":0})
     ]),
 
     dbc.Row([
@@ -59,9 +58,6 @@ layout = dbc.Container([
             dcc.Graph(id='attitudes_Comp', figure={})
         ], width = {"size":8, "offset":2}),
 
-        dbc.Col([
-            #dcc.Graph(id='graph_name', figure={})
-        ], width = {"size":0})
     ]),
 
 
@@ -69,15 +65,17 @@ layout = dbc.Container([
 ], fluid = True)
 
 
-## INTERACTIEVE FIGUREN MAKEN ------------------------------------------------------------------------------------------------
+## UPDATE COMPARISON VISUALISATIONS --------------------------------------------
 
-# Figuur vaccinatiegraad
 
+# Return correct user requested line graph of vaccination coverage comparison
 @app.callback(
     Output('vaccinations_Comp', 'figure'),
     Input('selected-countries', 'value')
 )
 def update_graph(selected_countries):
+
+    # Create and return line graph that compares selected countries in terms of vaccination coverage
     figVacComp = px.line(   preparation.vaccCov.loc[preparation.vaccCov['country'].isin(selected_countries)],
                             x="date",
                             y="coverage_full_dose",
@@ -91,16 +89,19 @@ def update_graph(selected_countries):
 
     figVacComp.update_traces(connectgaps=True)
     figVacComp.add_hline(y=90, line_width=2, line_dash="dash", opacity=0.2, annotation_text="<i>theoretical herd immunity</i>", annotation_position="top right")
+
     return figVacComp
 
-# Figuur attitudes
 
+# Return correct user requested line graph of vaccination attitude comparison
 @app.callback(
     Output('attitudes_Comp', 'figure'),
     [Input('selected-countries', 'value'),
      Input('attitude-dropwdown', 'value')]
 )
 def update_graph(selected_countries, attitude_dropdown):
+
+    # Create and return line graph that compares selected countries in terms of vaccination attitudes
     figAttComp = px.line(   preparation.vaccAttitudes.loc[preparation.vaccAttitudes['country'].isin(selected_countries)],
                             x="date",
                             y= attitude_dropdown,
@@ -111,4 +112,5 @@ def update_graph(selected_countries, attitude_dropdown):
                             template = "seaborn",
                             color_discrete_map = {"unwilling_percentage":"black", "uncertain_percentage":"purple", "willing_percentage":"seagreen"})
     figAttComp.update_traces(connectgaps=True)
+
     return figAttComp

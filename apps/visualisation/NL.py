@@ -14,9 +14,9 @@ from apps.modelling import modelling
 
 
 
-## FIGUREN MAKEN ------------------------------------------------------------------------------------------------
+## CREATE VISUALISATIONS FOR NL ------------------------------------------------
 
-# Figuur vaccinatiegraad NL
+# Line graph for vaccination coverage in NL
 figVacNL = px.line( preparation.vaccCovNL,
                     x="date",
                     y="coverage_full_dose",
@@ -31,12 +31,21 @@ figVacNL.update_traces(connectgaps=True)
 figVacNL.update_traces(line_color='#b67a0c')
 figVacNL.add_hline(y=90, line_width=2, line_dash="dash", opacity=0.2, annotation_text="<i>theoretical herd immunity</i>", annotation_position="top right")
 
-# Figuur attitudes NL
+# Define function to recode category labels
 def custom_legend_name(figure, new_names):
+    """ Recode labels for variable categories in plotly express graph
+
+        Parameters:
+        figure (plotly express graph): graph containing category labels to recode
+        new_names (list): list with new category names as strings
+
+        Returns:
+        Nothing, instead directly adjusts the ploty express graph
+    """
     for i, new_name in enumerate(new_names):
         figure.data[i].name = new_name
 
-
+# Line graph for attitudes towards vaccination in NL
 figAttNL = px.line( preparation.vaccAttitudesNL,
                     x="date",
                     y=["unwilling_percentage", "uncertain_percentage", "willing_percentage"],
@@ -51,7 +60,7 @@ figAttNL = px.line( preparation.vaccAttitudesNL,
 figAttNL.update_traces(connectgaps=True)
 custom_legend_name(figAttNL, ['unwilling to get vaccinated','uncertain about vaccination', "willing but not yet vaccinated"])
 
-# Figuur leeftijdsgroepen NL
+# Bar chart for vaccination coverage per age in NL
 figAgeNL = px.bar(  preparation.vaccAgeNL,
                     x='age_group',
                     y='coverage_full_dose',
@@ -64,7 +73,7 @@ figAgeNL = px.bar(  preparation.vaccAgeNL,
 figAgeNL.update_traces(marker_color='#b67a0c')
 
 
-# Figuur gemeentes NL
+# Choropleth for vaccination coverage per Dutch municipality
 figMunicNL = px.choropleth( preparation.vaccLocMapNL,
                             geojson=preparation.vaccLocMapNL.geometry,
                             locations=preparation.vaccLocMapNL.index,
@@ -78,8 +87,9 @@ figMunicNL.update_geos(projection_type="orthographic")
 
 
 
-## LAYOUT VAN PAGINA ------------------------------------------------------------------------------------------------
+## DEFINE LAYOUT OF NL PAGE ----------------------------------------------------
 
+# Create a grid with the NL visualisations as defined above
 layout = dbc.Container([
 
     dbc.Row([
