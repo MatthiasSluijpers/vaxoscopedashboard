@@ -18,51 +18,56 @@ from apps.preparation import preparation
 # Create a grid with the comparison visualisations as defined below
 # Also contains checkboxes to select countries to compare
 # Also contains dropdown menu to choose between vaccination attitude
-layout = dbc.Container([
+def createLayoutComparison():
+    """ Create updated layout for Comparison screen
 
-    dbc.Row([
+        Returns:
+        layout (dash layout): layout for Comparison screen
+    """
+    layout = dbc.Container([
 
-        dbc.Col([
-            html.P("Select countries to compare:",style={"fontStyle": "italic", "fontWeight":600})
-        ], width = {"size":2, "offset":3}, className="country-selection-instruction"),
+        dbc.Row([
 
-        dbc.Col([
-            dcc.Checklist(id='selected-countries',
-                          options= [{"label": "The Netherlands", "value":"NL"},
-                                    {"label": "United Kingdom", "value":"UK"},
-                                    {"label": "United States", "value":"US"}],
-                          value=['NL', 'UK', 'US'],
-                          labelClassName="checkbox-list")
-        ], width = {"size":4, "offset":0}, className="country-selection-box"),
-    ], className="country-selection-row"),
+            dbc.Col([
+                html.P("Select countries to compare:",style={"fontStyle": "italic", "fontWeight":600})
+            ], width = {"size":2, "offset":3}, className="country-selection-instruction"),
 
-    dbc.Row([
+            dbc.Col([
+                dcc.Checklist(id='selected-countries',
+                              options= [{"label": "The Netherlands", "value":"NL"},
+                                        {"label": "United Kingdom", "value":"UK"},
+                                        {"label": "United States", "value":"US"}],
+                              value=['NL', 'UK', 'US'],
+                              labelClassName="checkbox-list")
+            ], width = {"size":4, "offset":0}, className="country-selection-box"),
+        ], className="country-selection-row"),
 
-        dbc.Col([
-            dcc.Graph(id='vaccinations_Comp', figure={})
-        ], width = {"size":8, "offset":2}),
+        dbc.Row([
 
-    ]),
+            dbc.Col([
+                dcc.Graph(id='vaccinations_Comp', figure={})
+            ], width = {"size":8, "offset":2}),
 
-    dbc.Row([
+        ]),
 
-        dbc.Col([
-            html.Div([html.P("Attitudes towards vaccination per Country:")],
-                            className='custom-graph-title'),
-            dcc.Dropdown(   id='attitude-dropwdown', multi=False,
-                            options = [{"label": "Unwilling to get vaccinated", "value":"unwilling_percentage"},
-                                      {"label": "Uncertain about vaccination", "value":"uncertain_percentage"},
-                                      {"label": "Willing but not yet vaccinated", "value":"willing_percentage"}],
-                            value = "unwilling_percentage"
-                     ),
-            dcc.Graph(id='attitudes_Comp', figure={})
-        ], width = {"size":8, "offset":2}),
+        dbc.Row([
 
-    ]),
+            dbc.Col([
+                html.Div([html.P("Attitudes towards vaccination per Country:")],
+                                className='custom-graph-title'),
+                dcc.Dropdown(   id='attitude-dropwdown', multi=False,
+                                options = [{"label": "Unwilling to get vaccinated", "value":"unwilling_percentage"},
+                                          {"label": "Uncertain about vaccination", "value":"uncertain_percentage"},
+                                          {"label": "Willing but not yet vaccinated", "value":"willing_percentage"}],
+                                value = "unwilling_percentage"
+                         ),
+                dcc.Graph(id='attitudes_Comp', figure={})
+            ], width = {"size":8, "offset":2}),
 
+        ]),
 
-
-], fluid = True)
+    ], fluid = True)
+    return layout
 
 
 ## UPDATE COMPARISON VISUALISATIONS --------------------------------------------

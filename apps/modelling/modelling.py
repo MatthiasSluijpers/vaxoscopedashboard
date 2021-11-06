@@ -85,26 +85,24 @@ def predictFutureCoverage(countryVaccCov):
 
 # Refresh pediction of future vaccination coverage for two of three countries:
 def refreshFutureCoveragePrediction():
-    """ Forecasts vaccination coverage for upcoming month for NL, UK and US.
+    """ Forecasts vaccination coverage for upcoming month for UK and US.
 
         By calling:
-        Function to forecast coverage for NL, UK and US dataset
+        Function to forecast coverage for UK and US dataset
         See predictFutureCoverage
 
         Requires:
-        vaccCovNL (dataframe) to be made available by preparation code
         vaccCovUK (dataframe) to be made available by preparation code
         vaccCovUS (dataframe) to be made available by preparation code
 
 
         Makes the following datasets available:
-        vaccCovPredNL (dataframe): forecast for vaccination coverage in next month for NL
         vaccCovPredUK (dataframe): forecast for vaccination coverage in next month for UK
         vaccCovPredUS (dataframe): forecast for vaccination coverage in next month for US
     """
-    # Predict future vaccination coverage for UK
-    global vaccCovPredNL
-    vaccCovPredNL = predictFutureCoverage(preparation.vaccCovNL)
+    # No prediction for NL due to insufficient confidence interval
+    # global vaccCovPredNL
+    # vaccCovPredNL = predictFutureCoverage(preparation.vaccCovNL)
 
     # Predict future vaccination coverage for UK
     global vaccCovPredUK
