@@ -118,7 +118,7 @@ def createLocationMapNL():
                                 locations=preparation.vaccLocMapNL.index,
                                 color="coverage_full_dose",
                                 title="<b>Vaccination level per Dutch municipality:</b>",
-                                labels = {"coverage_full_dose":"Vaccination Level (%)", "statnaam":"Municipality"},
+                                labels = {"coverage_full_dose":"Vaccination Level (%), 12+", "statnaam":"Municipality"},
                                 color_continuous_scale = [[0,"red"], [0.6,"orange"], [1,"steelblue"]],
                                 template = "seaborn")
     figMunicNL.update_geos(fitbounds="locations", visible=False)
