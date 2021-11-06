@@ -112,7 +112,9 @@ def update_graph(selected_countries, attitude_dropdown):
                             y= attitude_dropdown,
                             color="country",
                             labels = {"date" : "Date",
-                                      "value" : "Share of Population (%)"},
+                                      "unwilling_percentage" : "Share of Population (%)",
+                                      "willing_percentage" : "Share of Population (%)",
+                                      "uncertain_percentage" : "Share of Population (%)"},
                             range_y = [0,100],
                             template = "seaborn",
                             color_discrete_map = {"unwilling_percentage":"black", "uncertain_percentage":"purple", "willing_percentage":"seagreen"})
