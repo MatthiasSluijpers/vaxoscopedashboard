@@ -5,6 +5,7 @@
 # The prepared files are used by modelling and visualisation code.
 
 ## IMPORT LIBRARIES ------------------------------------------------------------
+print("preparation start")
 import pandas as pd
 import geopandas as gpd
 import numpy as np
@@ -19,13 +20,14 @@ def prepareVaccCovAll():
     # Set data variable
     global vaccCov
 
-    # Load dynamic data by retrieving from online source
+    # Load dynamic data by retrieving from online source and check structure
     try:
         vaccCov = pd.read_csv('https://covid.ourworldindata.org/data/owid-covid-data.csv')
+        vaccCov[['date', 'iso_code', 'people_vaccinated', 'people_vaccinated_per_hundred', 'people_fully_vaccinated', 'people_fully_vaccinated_per_hundred']]
     # If data cannot be retrieved: load local backup file from 05-11-2021
     except:
         vaccCov = pd.read_csv("data/backup/vaccCov.csv")
-        print("Note: could not load vaccination attitude data from online source, used local backup file instead.")
+        print("Note: could not load vaccination coverage data from online source, used local backup file instead.")
 
     # Select relevant columns
     vaccCov = vaccCov[['date', 'iso_code', 'people_vaccinated', 'people_vaccinated_per_hundred', 'people_fully_vaccinated', 'people_fully_vaccinated_per_hundred']]
@@ -67,6 +69,7 @@ def prepareVaccCovAll():
     global vaccCovUS
     vaccCovUS = vaccCov
     vaccCovUS = vaccCovUS[vaccCovUS["country"] == "US"][["country", "date","coverage_full_dose"]]
+
 
 # Vaccination attitudes for all three countries:
 def prepareVaccAttitudesAll():
@@ -132,9 +135,10 @@ def prepareVaccAgeNL():
     # Set data variable
     global vaccAgeNL
 
-    # Load dynamic data by retrieving from online source
+    # Load dynamic data by retrieving from online source and check structure
     try:
         vaccAgeNL = pd.read_csv('https://data.rivm.nl/data/covid-19/COVID-19_vaccinatiegraad_per_gemeente_per_week_leeftijd.csv', sep=';')
+        vaccAgeNL[['Vaccination_coverage_partly','Vaccination_coverage_completed','Date_of_statistics', 'Age_group']]
     # If data cannot be retrieved: load local backup file from 05-11-2021
     except:
         vaccAgeNL = pd.read_csv("data/backup/vaccAgeNL.csv", sep=';')
@@ -191,9 +195,10 @@ def prepareVaccAgeUK():
     # Set data variable
     global vaccAgeUK
 
-    # Load dynamic data by retrieving from online source
+    # Load dynamic data by retrieving from online source and check structure
     try:
         vaccAgeUK = pd.read_csv('https://api.coronavirus.data.gov.uk/v2/data?areaType=nation&areaCode=E92000001&metric=vaccinationsAgeDemographics&format=csv')
+        vaccAgeUK[['date', 'age', 'cumPeopleVaccinatedFirstDoseByVaccinationDate', 'cumPeopleVaccinatedCompleteByVaccinationDate', 'cumVaccinationFirstDoseUptakeByVaccinationDatePercentage', 'cumVaccinationCompleteCoverageByVaccinationDatePercentage']]
     # If data cannot be retrieved: load local backup file from 05-11-2021
     except:
         vaccAgeUK = pd.read_csv("data/backup/vaccAgeUK.csv")
@@ -218,7 +223,7 @@ def prepareVaccAgeUK():
     # Add 'country' column
     vaccAgeUK['country'] = 'UK'
 
-    # Recode age labels
+    # Recode age group category labels
     vaccAgeUK['age_group'] = vaccAgeUK['age_group'].replace({'12_15': '12-15', '16_17': '16-17', '18_24': '18-24', '25_29': '25-29',
                                                       '30_34': '30-34', '35_39': '35-39', '40_44': '40-44', '45_49': '45-49',
                                                        '50_54': '50-54', '55_59': '55-59', '60_64': '60-64', '65_69': '65-69',
@@ -237,9 +242,10 @@ def prepareVaccAgeUS():
     # Set data variable
     global vaccAgeUS
 
-    # Load dynamic data by retrieving from online source
+    # Load dynamic data by retrieving from online source and check structure
     try:
         vaccAgeUS = pd.read_csv("https://data.cdc.gov/resource/km4m-vcsb.csv")
+        vaccAgeUS[['date','demographic_category','administered_dose1','administered_dose1_pct','series_complete_yes','series_complete_pop_pct']]
     # If data cannot be retrieved: load local backup file from 05-11-2021
     except:
         vaccAgeUS = pd.read_csv("data/backup/vaccAgeUS.csv")
@@ -277,6 +283,7 @@ def prepareVaccAgeUS():
     # Add 'country' column
     vaccAgeUS['country'] = 'US'
 
+    # Recode age group category labels
     vaccAgeUS['age_group'] = vaccAgeUS['age_group'].replace({'Ages_18-24_yrs': '18-24', 'Ages_50-64_yrs': '50-64', 'Ages_75+_yrs': '75+', 'Ages_65-74_yrs': '65-74',
                                                       'Ages_25-39_yrs': '25-39', 'Ages_50-65_yrs': '50-65', 'Ages_16-17_yrs': '16-17', 'Ages_<12yrs': '12-',
                                                        'Ages_40-49_yrs': '40-49', 'Ages_<18yrs': '18-', 'Ages_12-15_yrs': '12-15', 'Ages_30-39_yrs': '30-39',
@@ -314,9 +321,10 @@ def prepareVaccLocNL():
     # Set data variable
     global vaccLocNL
 
-    # Load dynamic data by retrieving from online source
+    # Load dynamic data by retrieving from online source and check structure
     try:
         vaccLocNL = pd.read_csv('https://data.rivm.nl/data/covid-19/COVID-19_vaccinatiegraad_per_gemeente_per_week_leeftijd.csv', sep=';')
+        vaccLocNL[['Region_level', 'Region_code', 'Region_name', 'Birth_year','Date_of_statistics',  'Vaccination_coverage_completed', 'Vaccination_coverage_partly']]
     # If data cannot be retrieved: load local backup file from 05-11-2021
     except:
         vaccLocNL = pd.read_csv("data/backup/vaccLocNL.csv", sep=";")
@@ -386,6 +394,7 @@ def prepareVaccLocUK():
     # Load dynamic data by retrieving from online source
     try:
         vaccLocUK = pd.read_csv("https://api.coronavirus.data.gov.uk/v2/data?areaType=ltla&metric=cumVaccinationCompleteCoverageByVaccinationDatePercentage&format=csv")
+        vaccLocUK[['areaType','areaName', 'areaCode', 'cumVaccinationCompleteCoverageByVaccinationDatePercentage', 'date']]
     # If data cannot be retrieved: load local backup file from 05-11-2021
     except:
         vaccLocUK = pd.read_csv("data/backup/vaccLocUK.csv")
@@ -425,9 +434,10 @@ def prepareVaccLocUS():
     # Set data variable
     global vaccLocUSCounty
 
-    # Load dynamic data by retrieving from online source
+    # Load dynamic data by retrieving from online source and check structure
     try:
         vaccLocUSCounty = pd.read_csv("https://data.cdc.gov/resource/8xkx-amqh.csv?$limit=10000")
+        vaccLocUSCounty[['date','fips','recip_county','series_complete_pop_pct','series_complete_yes','administered_dose1_recip','administered_dose1_pop_pct']]
     # If data cannot be retrieved: load local backup file from 05-11-2021
     except:
         vaccLocUSCounty = pd.read_csv("data/backup/vaccLocUSCounty.csv")
@@ -470,9 +480,10 @@ def prepareVaccLocUS():
     # Set data variable
     global vaccLocUSState
 
-    # Load dynamic data by retrieving from online source
+    # Load dynamic data by retrieving from online source and check structure
     try:
         vaccLocUSState = pd.read_csv("https://data.cdc.gov/resource/unsk-b7fc.csv?$limit=200")
+        vaccLocUSState[['date','location','series_complete_pop_pct','series_complete_yes','administered_dose1_recip','administered_dose1_pop_pct']]
     # If data cannot be retrieved: load local backup file from 05-11-2021
     except:
         vaccLocUSState = pd.read_csv("data/backup/vaccLocUSState.csv")
@@ -653,8 +664,10 @@ def checkForRefresh():
 
     # Refresh data if more than an hour has passed
     if(minutesElapsed > 60):
-        refreshData()
         lastRefreshTime = datetime.datetime.now()
+        return True
+    else:
+        return False
 
 def recordLaunchTime():
 
@@ -671,3 +684,5 @@ prepareVaccLocAll()
 prepareVaccAgeAll()
 prepareVaccAttitudesAll()
 prepareVaccCovAll()
+
+print("preparation end")

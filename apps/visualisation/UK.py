@@ -10,6 +10,7 @@ import pathlib
 from app import app
 import dash_bootstrap_components as dbc
 from apps.preparation import preparation
+from apps.modelling import modelling
 
 
 
@@ -25,9 +26,28 @@ figVacUK = px.line( preparation.vaccCovUK,
                     range_y = [0,100],
                     template = "seaborn")
 
+figVacPredUK = px.line(     modelling.vaccCovPredUK,
+                            x="date",
+                            y="predicted",
+                            labels = {"predicted" : "Predicted Vaccination Level (%)"})
+figVacConfLowUK = px.line(  modelling.vaccCovPredUK,
+                            x="date",
+                            y="lower_confint",
+                            labels = {"lower_confint" : "Lower limit of confidence interval"})
+figVacConfUpUK = px.line(   modelling.vaccCovPredUK,
+                            x="date",
+                            y="upper_confint",
+                            labels = {"upper_confint" : "Upper limit of confidence interval"})
+
 figVacUK.update_traces(connectgaps=True)
 figVacUK.update_traces(line_color="crimson")
+figVacPredUK.update_traces(line_color="seagreen")
+figVacConfLowUK.update_traces(line_color="#b8d7c6")
+figVacConfUpUK.update_traces(line_color="#b8d7c6")
 figVacUK.add_hline(y=90, line_width=2, line_dash="dash", opacity=0.2, annotation_text="<i>theoretical herd immunity</i>", annotation_position="top right")
+figVacUK.add_trace(figVacPredUK.data[0])
+figVacUK.add_trace(figVacConfLowUK.data[0])
+figVacUK.add_trace(figVacConfUpUK.data[0])
 
 # Figuur attitudes UK
 def custom_legend_name(figure, new_names):

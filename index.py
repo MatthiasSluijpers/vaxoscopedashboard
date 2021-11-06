@@ -117,22 +117,33 @@ dbc.Row([
               [Input('url', 'pathname')])
 def render_page_content(pathname):
     if pathname == '/':
-        preparation.checkForRefresh()
+        if(preparation.checkForRefresh()):
+            preparation.refreshData()
+            modelling.refreshFutureCoveragePrediction()
         return home_layout
     if pathname == '/NL':
-        preparation.checkForRefresh()
+        if(preparation.checkForRefresh()):
+            preparation.refreshData()
+            modelling.refreshFutureCoveragePrediction()
         return NL.layout
     if pathname == '/UK':
-        preparation.checkForRefresh()
+        if(preparation.checkForRefresh()):
+            preparation.refreshData()
+            modelling.refreshFutureCoveragePrediction()
         return UK.layout
     if pathname == '/USA':
-        preparation.checkForRefresh()
+        if(preparation.checkForRefresh()):
+            preparation.refreshData()
+            modelling.refreshFutureCoveragePrediction()
         return USA.layout
     if pathname == '/Comparison':
-        preparation.checkForRefresh()
+        if(preparation.checkForRefresh()):
+            preparation.refreshData()
+            modelling.refreshFutureCoveragePrediction()
         return comparison.layout
     if pathname == '/Refresh':
         preparation.refreshData()
+        modelling.refreshFutureCoveragePrediction()
         return "The data was successfully refreshed."
     else:
         return "This page does not exist."

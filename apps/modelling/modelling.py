@@ -2,19 +2,94 @@
 
 # This file only contains modelling for predictive analytics and target reports.
 # The modelling for descriptive analytics is included in visuation code.
-
+print("modelling start")
 ## IMPORT LIBRARIES ------------------------------------------------------------
 import pandas as pd
 import numpy as np
+from statsmodels.tsa.arima_model import ARIMA
+import pmdarima as pm
+from datetime import datetime as dt
+from datetime import timedelta
 import re
 from apps.preparation import preparation
 
 ## PREDICTIVE MODELLING --------------------------------------------------------
 
+# Predict future vaccination coverage
+def predictFutureCoverage(countryVaccCov):
+
+    # Try to predict future vaccination coverage
+    try:
+        # Extract historical coverage percentages and dates
+        trainingSeries = countryVaccCov[['date', 'coverage_full_dose']]
+        trainingSeries = trainingSeries.dropna()
+        trainingSeries = trainingSeries.reset_index()
+
+        # Create ARIMA time-series forecasting model
+        forecastModel = pm.auto_arima(  trainingSeries.coverage_full_dose, start_p=1, start_q=1,
+                                          test='adf',       # use adftest to find optimal 'd'
+                                          max_p=3, max_q=3, # maximum p and q
+                                          m=1,              # frequency of series
+                                          d=None,           # let model determine 'd'
+                                          seasonal=False,   # No Seasonality
+                                          start_P=0,
+                                          D=0,
+                                          trace=True,
+                                          error_action='ignore',
+                                          suppress_warnings=True,
+                                          stepwise=True)
 
 
+        # Forecast vaccination coverage for next month
+        n_periods = 30
+        fc, confint = forecastModel.predict(n_periods=n_periods, return_conf_int=True)
+        index_of_fc = np.arange(len(trainingSeries.coverage_full_dose), len(trainingSeries.coverage_full_dose)+n_periods)
+
+        fc_series = pd.Series(fc, index=index_of_fc)
+        lower_series = pd.Series(confint[:, 0], index=index_of_fc)
+        upper_series = pd.Series(confint[:, 1], index=index_of_fc)
 
 
+        # Store forecasted values and confidence interval in table
+        forecast = pd.DataFrame({ 'predicted': fc_series,
+                                    'lower_confint': lower_series,
+                                    "upper_confint": upper_series})
+
+
+        # Add correct dates corresponding to forecasts to table
+        last_date = trainingSeries['date'].iloc[-1]
+        dates = pd.date_range(last_date + timedelta(days=1), periods = 30, name='date')
+        forecast['date'] = dates
+
+    #If forecast fails due to incompatible data, then create empty table
+    except:
+        forecast = pd.DataFrame()
+        forecast['predicted'] = np.NaN
+        forecast['lower_confint'] = np.NaN
+        forecast['upper_confint'] = np.NaN
+        forecast['date'] = np.NaN
+        print("Could not forecast vaccination coverage.")
+
+    # Return forcasted coverage
+    return forecast
+
+# Refresh pediction of future vaccination coverage for two of three countries:
+def refreshFutureCoveragePrediction():
+
+    # No prediction for NL as forecasts have insufficent confidence.
+    # global vaccCovPredNL
+    # vaccCovPredNL = predictFutureCoverage(preparation.vaccCovNL)
+
+    # Predict future vaccination coverage for NL
+    global vaccCovPredUK
+    vaccCovPredUK = predictFutureCoverage(preparation.vaccCovUK)
+
+    # Predict future vaccination coverage for US
+    global vaccCovPredUS
+    vaccCovPredUS = predictFutureCoverage(preparation.vaccCovUS)
+
+# Predict at dashboard launch
+refreshFutureCoveragePrediction()
 
 ## TARGET REPORT MODELLING -----------------------------------------------------
 
@@ -97,3 +172,5 @@ def highestUnwilComp():
     u = u.replace("UK","United Kingdom")
     u = u.replace("US","United States")
     return u
+
+print("modelling end")

@@ -10,6 +10,7 @@ import pathlib
 from app import app
 import dash_bootstrap_components as dbc
 from apps.preparation import preparation
+from apps.modelling import modelling
 
 
 
@@ -24,6 +25,7 @@ figVacNL = px.line( preparation.vaccCovNL,
                               "date" : "Date"},
                     range_y = [0,100],
                     template = "seaborn")
+
 
 figVacNL.update_traces(connectgaps=True)
 figVacNL.update_traces(line_color='#b67a0c')
