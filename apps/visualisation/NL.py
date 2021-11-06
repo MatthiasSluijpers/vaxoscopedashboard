@@ -26,6 +26,7 @@ def createCovFigNL():
         Returns:
         figVacNL (plotly express graph): line graph for vaccination coverage in NL
     """
+    # Line graph for historical vaccination coverage in NL
     figVacNL = px.line( preparation.vaccCovNL,
                         x="date",
                         y="coverage_full_dose",
@@ -35,9 +36,29 @@ def createCovFigNL():
                         range_y = [0,100],
                         template = "seaborn")
 
+    # Line graph for predicted vaccination coverage in NL
+    figVacPredNL = px.line(     modelling.vaccCovPredNL,
+                                x="date",
+                                y="predicted",
+                                labels = {"predicted" : "Predicted Vaccination Level (%)"})
+    figVacConfLowNL = px.line(  modelling.vaccCovPredNL,
+                                x="date",
+                                y="lower_confint",
+                                labels = {"lower_confint" : "Lower limit of confidence interval"})
+    figVacConfUpNL = px.line(   modelling.vaccCovPredNL,
+                                x="date",
+                                y="upper_confint",
+                                labels = {"upper_confint" : "Upper limit of confidence interval"})
+
     figVacNL.update_traces(connectgaps=True)
     figVacNL.update_traces(line_color='#b67a0c')
+    figVacPredNL.update_traces(line_color="seagreen")
+    figVacConfLowNL.update_traces(line_color="#b8d7c6")
+    figVacConfUpNL.update_traces(line_color="#b8d7c6")
     figVacNL.add_hline(y=90, line_width=2, line_dash="dash", opacity=0.2, annotation_text="<i>theoretical herd immunity</i>", annotation_position="top right")
+    figVacNL.add_trace(figVacPredNL.data[0])
+    figVacNL.add_trace(figVacConfLowNL.data[0])
+    figVacNL.add_trace(figVacConfUpNL.data[0])
     return figVacNL
 
 

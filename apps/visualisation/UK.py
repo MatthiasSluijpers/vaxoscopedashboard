@@ -26,6 +26,7 @@ def createCovFigUK():
         Returns:
         figVacUK (plotly express graph): line graph for vaccination coverage in UK
     """
+    # Line graph for historical vaccination coverage in UK
     figVacUK = px.line( preparation.vaccCovUK,
                         x="date",
                         y="coverage_full_dose",

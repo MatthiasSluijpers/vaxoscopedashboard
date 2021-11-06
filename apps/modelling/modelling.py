@@ -19,11 +19,12 @@ from apps.preparation import preparation
 print("Modelling data ...")
 
 # Predict future vaccination coverage
-def predictFutureCoverage(countryVaccCov):
+def predictFutureCoverage(countryVaccCov, interval):
     """ Forecast vaccination coverage level for upcoming month.
 
         Parameter:
         countryVaccCov (dataframe): dataset with historical vaccination coverage levels.
+        interval (string): "weekly" for weekly historical data such as NL, "daily" for daily historical data such as UK, US.
 
         Returns:
         forecast (dataframe): dataset with forecasted coverage levels and corresponding confidence intervals.
@@ -51,7 +52,10 @@ def predictFutureCoverage(countryVaccCov):
 
 
         # Forecast vaccination coverage for next month
-        n_periods = 30
+        if(interval=="daily"):
+            n_periods = 30
+        elif(interval=="weekly"):
+            n_periods = 4
         fc, confint = forecastModel.predict(n_periods=n_periods, return_conf_int=True)
         index_of_fc = np.arange(len(trainingSeries.coverage_full_dose), len(trainingSeries.coverage_full_dose)+n_periods)
 
@@ -68,7 +72,10 @@ def predictFutureCoverage(countryVaccCov):
 
         # Add correct dates corresponding to forecasts to table
         last_date = trainingSeries['date'].iloc[-1]
-        dates = pd.date_range(last_date + timedelta(days=1), periods = 30, name='date')
+        if(interval=="daily"):
+            dates = pd.date_range(last_date + timedelta(days=1), periods = 30, name='date')
+        elif(interval=="weekly"):
+            dates = pd.date_range(last_date + timedelta(days=1), periods = 4, name='date', freq='W-SUN')
         forecast['date'] = dates
 
     #If forecast fails due to incompatible data, then create empty table
@@ -85,32 +92,34 @@ def predictFutureCoverage(countryVaccCov):
 
 # Refresh pediction of future vaccination coverage for two of three countries:
 def refreshFutureCoveragePrediction():
-    """ Forecasts vaccination coverage for upcoming month for UK and US.
+    """ Forecasts vaccination coverage for upcoming month for NL, UK and US.
 
         By calling:
-        Function to forecast coverage for UK and US dataset
+        Function to forecast coverage for NL, UK and US dataset
         See predictFutureCoverage
 
         Requires:
+        vaccCovNL (dataframe) to be made available by preparation code
         vaccCovUK (dataframe) to be made available by preparation code
         vaccCovUS (dataframe) to be made available by preparation code
 
 
         Makes the following datasets available:
+        vaccCovPredNL (dataframe): forecast for vaccination coverage in next month for NL
         vaccCovPredUK (dataframe): forecast for vaccination coverage in next month for UK
         vaccCovPredUS (dataframe): forecast for vaccination coverage in next month for US
     """
-    # No prediction for NL due to insufficient confidence interval
-    # global vaccCovPredNL
-    # vaccCovPredNL = predictFutureCoverage(preparation.vaccCovNL)
+    # Predict future vaccination coverage for NL
+    global vaccCovPredNL
+    vaccCovPredNL = predictFutureCoverage(preparation.vaccCovNL, "weekly")
 
     # Predict future vaccination coverage for UK
     global vaccCovPredUK
-    vaccCovPredUK = predictFutureCoverage(preparation.vaccCovUK)
+    vaccCovPredUK = predictFutureCoverage(preparation.vaccCovUK, "daily")
 
     # Predict future vaccination coverage for US
     global vaccCovPredUS
-    vaccCovPredUS = predictFutureCoverage(preparation.vaccCovUS)
+    vaccCovPredUS = predictFutureCoverage(preparation.vaccCovUS, "daily")
 
 # Predict at dashboard launch
 refreshFutureCoveragePrediction()
