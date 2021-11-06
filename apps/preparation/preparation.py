@@ -1,11 +1,10 @@
 ## DATA PREPARATION CODE -------------------------------------------------------
 
-# This file contains data retrieval and perparation.
-# These files are written to the data/prepared folder.
-# The prepared files are used by modelling and visualisation code.
+# This file contains data retrieval and preparation.
+# The prepared datasets are made available as global variables.
+# The prepared datasets are used by the modelling and visualisation code.
 
 ## IMPORT LIBRARIES ------------------------------------------------------------
-print("preparation start")
 import pandas as pd
 import geopandas as gpd
 import numpy as np
@@ -14,9 +13,19 @@ import datetime
 
 ## RETRIEVE AND PREPARE DATA ---------------------------------------------------
 
+# Log when the dashboard starts retrieving and preparing data
+print("Retrieving and preparing data ...")
+
 # Vaccination coverage for all three countries
 def prepareVaccCovAll():
+    """ Retrieves and prepares vaccination coverage data for all thee countries.
 
+        Makes following datasets available:
+        vaccCov (dataframe): time-series vaccination coverage data for all three countries
+        vaccCovNL (dataframe): time-series vaccination coverage data of NL only
+        vaccCovUK (dataframe): time-series vaccination coverage data for UK only
+        vaccCovUS (dataframe): time-series vaccination coverage data for US only
+    """
     # Set data variable
     global vaccCov
 
@@ -73,7 +82,14 @@ def prepareVaccCovAll():
 
 # Vaccination attitudes for all three countries:
 def prepareVaccAttitudesAll():
+    """ Retrieves and prepares vaccination attitude data for all thee countries.
 
+        Makes following datasets available:
+        accAttitudes (dataframe): vaccination attitude data for all three countries
+        accAttitudesNL (dataframe): vaccination attitude data for NL only
+        accAttitudesUK (dataframe): vaccination attitude data for UK only
+        accAttitudesUS (dataframe): vaccination attitude data for US only
+    """
 
     # Note: this data cannot be dynamically retrieved as there is no stable url/api.
     # Therefore: the dashboard uses local backup version of the dataset from 05-11-2021.
@@ -131,7 +147,11 @@ def prepareVaccAttitudesAll():
 
 # Vaccination coverage per age level for NL
 def prepareVaccAgeNL():
+    """ Retrieves and prepares vaccination coverage per age group in NL.
 
+        Makes following dataset available:
+        vaccAgeNL (dataframe): vaccination coverage per age group in NL
+    """
     # Set data variable
     global vaccAgeNL
 
@@ -191,7 +211,11 @@ def prepareVaccAgeNL():
 
 # Vaccination coverage per age level for UK
 def prepareVaccAgeUK():
+    """ Retrieves and prepares vaccination coverage per age group in UK.
 
+        Makes following dataset available:
+        vaccAgeUK (dataframe): vaccination coverage per age group in UK
+    """
     # Set data variable
     global vaccAgeUK
 
@@ -238,7 +262,11 @@ def prepareVaccAgeUK():
 
 # Vaccination coverage per age level for US
 def prepareVaccAgeUS():
+    """ Retrieves and prepares vaccination coverage per age group in US.
 
+        Makes following dataset available:
+        vaccAgeUS (dataframe): vaccination coverage per age group in US
+    """
     # Set data variable
     global vaccAgeUS
 
@@ -304,7 +332,17 @@ def prepareVaccAgeUS():
 
 # Vaccination coverage per age level for all countries
 def prepareVaccAgeAll():
+    """ Retrieves and prepares vaccination coverage per age group for all three countries.
 
+        By calling:
+        Functions that first retrieve and prepare age group datasets for each seperate country:
+        See prepareVaccAgeNL, prepareVaccAgeUK, prepareVaccAgeUS functions.
+
+        Then integrates seperate datasets for each country into one merged dataset.
+
+        Makes following dataset available:
+        vaccAge (dataframe): vaccination coverage per age group for all three countries
+    """
     # First retrieve and prepare vaccination coverage per age for each seperate country
     prepareVaccAgeNL()
     prepareVaccAgeUK()
@@ -317,7 +355,12 @@ def prepareVaccAgeAll():
 
 # Vaccination coverage per municipality location in NL
 def prepareVaccLocNL():
+    """ Retrieves and prepares vaccination coverage per municipality in NL.
 
+        Makes following datasets available:
+        vaccLocNL (dataframe): vaccination coverage per municipality in NL
+        vaccLocMapNL (geodataframe): map with vaccination coverage per municipality in NL
+    """
     # Set data variable
     global vaccLocNL
 
@@ -387,7 +430,12 @@ def prepareVaccLocNL():
 
 # Vaccination coverage per lower tier local authority location in UK
 def prepareVaccLocUK():
+    """ Retrieves and prepares vaccination coverage per lower tier local authority in UK.
 
+        Makes following datasets available:
+        vaccLocUK (dataframe): vaccination coverage per lower tier local authority in UK
+        vaccLocMapUK (geodataframe): map with vaccination coverage per lower tier local authority in NL
+    """
     # Set data variable
     global vaccLocUK
 
@@ -428,7 +476,14 @@ def prepareVaccLocUK():
 
 # Vaccination coverage per county and state location in US
 def prepareVaccLocUS():
+    """ Retrieves and prepares vaccination coverage per county and state in US.
 
+        Makes following datasets available:
+        vaccLocUSCounty (dataframe): vaccination coverage per county in US
+        vaccLocMapCountyUS (geodataframe): map with vaccination coverage per county in US
+        vaccLocUSState (dataframe): vaccination coverage per state in US
+        vaccLocMapStateUS (geodataframe): map with vaccination coverage per state in US
+    """
     # (1/2) Location on county level:
 
     # Set data variable
@@ -580,7 +635,12 @@ def prepareVaccLocUS():
 
 # Vaccination coverage per location for all three countries
 def prepareVaccLocAll():
+    """ Retrieves and prepares vaccination coverage per location for all three countries.
 
+        By calling:
+        Functions that first retrieve and prepare location level datasets for each seperate country:
+        See prepareVaccLocNL, prepareVaccLocUS, prepareVaccLocUK functions.
+    """
     # Retrieve and prepare vaccination coverage per location for each country
     prepareVaccLocUS()
     prepareVaccLocNL()
@@ -589,7 +649,11 @@ def prepareVaccLocAll():
 
 # Vaccination coverage per income for NL
 def prepareVaccIncomeNL():
+    """ Placeholder for function to retrieve and prepare vaccination coverage per income group in NL.
 
+        Makes following dataset available:
+        vaccIncomeNL (dataframe): empty placeholder for vaccination coverage per income group in NL
+    """
     # Note: currently no open data is available for vaccination coverage per income group in NL.
     # Therefore: this function is a placeholder that creates an empty dataframe with expected structure.
     # Extendable: function can be updated if data becomes available in future.
@@ -606,7 +670,12 @@ def prepareVaccIncomeNL():
 
 # Vaccination coverage per income for UK
 def prepareVaccIncomeUK():
+    """ Retrieves and prepares vaccination coverage per income group in UK.
 
+        Makes following dataset available:
+        vaccIncomeUK (dataframe): vaccination coverage per income group in UK
+    """
+    # Note
     # Note: this data cannot be dynamically retrieved as there is no stable url/api.
     # Furthermore: data source did not update data for last few months, next release date unkown.
     # Reference: see 'https://www.ons.gov.uk/peoplepopulationandcommunity/healthandsocialcare/healthandwellbeing/datasets/coronavirusandvaccinehesitancygreatbritain'
@@ -618,7 +687,11 @@ def prepareVaccIncomeUK():
 
 # Vaccination coverage per income for US
 def prepareVaccIncomeUS():
+    """ Retrieves and prepares vaccination coverage per income group in US.
 
+        Makes following dataset available:
+        vaccIncomeUS (dataframe): vaccination coverage per income group in US
+    """
     # Note: this data cannot be dynamically retrieved as there is no stable url/api.
     # Furthermore: structure of data prone to change, thereby disallowing automation.
     # Reference: see table 5a from 'https://www.census.gov/data/tables/2021/demo/hhp/hhp39.html'
@@ -632,7 +705,12 @@ def prepareVaccIncomeUS():
 
 # Vaccination coverage per income group for all three countries
 def prepareVaccIncomeAll():
+    """ Retrieves and prepares vaccination coverage per income level for all three countries.
 
+        By calling:
+        Functions that first create income level datasets for each seperate country:
+        See prepareVaccIncomeNL, prepareVaccIncomeUK, prepareVaccIncomeUS functions.
+    """
     # Retrieve and prepare vaccination coverage per income group for each country
     prepareVaccIncomeUK()
     prepareVaccIncomeNL()
@@ -643,7 +721,12 @@ def prepareVaccIncomeAll():
 
 # Function to retrieve updated data from data sources
 def refreshData():
+    """ Retrieves and prepares all of the datasets used within the dashboard.
 
+        By calling:
+        Functions that retrieve and preprare all of the datasets used within the dashboard
+        See prepareVaccCovAll, prepareVaccAttitudesAll, prepareVaccAgeAll, prepareVaccLocAll, prepareVaccIncomeAll
+    """
     print("Refreshing data, note that this might take 0,5 to 3 minutes...")
 
     prepareVaccIncomeAll()
@@ -655,7 +738,14 @@ def refreshData():
     print("Succefully refreshed data.")
 
 def checkForRefresh():
+    """ Determines if data that is currently being used in the dashboard should be refreshed.
+        If an hour has passed since the last automatic refresh, then the data should be refreshed.
+        Note that this refresh check is only invoked if the user selects a new page in the dashboard.
+        Note that this function does not take manual refreshes into account.
 
+        Returns:
+        Boolean: true if data is due to be refreshed, false if not.
+    """
     # Calculate minutes since last refresh
     global lastRefreshTime
     currentTime = datetime.datetime.now()
@@ -670,7 +760,13 @@ def checkForRefresh():
         return False
 
 def recordLaunchTime():
+    """ Records the date and time when the dashboard is launched.
+        This date and time is used by the mechanism to automatically refresh data.
+        See the checkForRefresh function.
 
+        Makes following data available:
+        lastRefreshTime (datetime): last time the data was automatically refreshed.
+    """
     # Record timestamp when launching dashboard
     global lastRefreshTime
     lastRefreshTime = datetime.datetime.now()
@@ -685,4 +781,5 @@ prepareVaccAgeAll()
 prepareVaccAttitudesAll()
 prepareVaccCovAll()
 
-print("preparation end")
+# Log when the dashboard finished with retrieving and preparing data
+print("Finished retrieving and preparing data.")
