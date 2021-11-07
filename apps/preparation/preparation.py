@@ -466,8 +466,8 @@ def prepareVaccLocUK():
     vaccLocUK.insert(0, 'location_level', 'Lower tier local authority')
     vaccLocUK['country'] = 'UK'
 
-    # Filter by latest date
-    vaccLocUK = vaccLocUK[vaccLocUK["date"]==vaccLocUK["date"].max()]
+    # Filter by latest date that is available for each local authority
+    vaccLocUK = vaccLocUK.sort_values(['location_name', 'date']).drop_duplicates(subset = 'location_name', keep = 'last')
 
     # Match and merge data with country geography to draw map
     global vaccLocMapUK
